@@ -174,3 +174,16 @@ CREATE TABLE traitements_pathologies(
 	FOREIGN KEY (id_pathologie) REFERENCES pathologies(id_pathologie)
 	);
 
+/*
+	Données des administrateurs-modérateurs.
+*/
+CREATE TABLE administrateurs_modérateurs(
+	id MEDIUMINT NOT NULL AUTO_INCREMENT,
+	nom VARCHAR(100) NOT NULL,
+	prenom VARCHAR(100) NOT NULL,
+	password VARCHAR(255) NOT NULL,
+	naissance DATE,
+	pays VARCHAR(20),
+	adresse_electronique VARCHAR(100) NOT NULL,
+	PRIMARY KEY (id)
+	);
