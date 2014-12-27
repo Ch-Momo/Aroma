@@ -10,7 +10,7 @@ CREATE TABLE huiles(
 	origine_geo TEXT NOT NULL,
 	conseils TEXT,
 	indications TEXT,
-	message_energitique TEXT,
+	message_energetique TEXT,
 	image TINYTEXT,
 	video TINYTEXT,
 	PRIMARY KEY (id_huile),
