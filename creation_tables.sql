@@ -12,7 +12,6 @@ CREATE TABLE huiles(
 	indications TEXT,
 	message_energetique TEXT,
 	image TINYTEXT,
-	video TINYTEXT,
 	PRIMARY KEY (id_huile),
 	UNIQUE KEY(nom_huile),
 	FOREIGN KEY (id_famille) REFERENCES familles(id_famille)
@@ -138,7 +137,6 @@ CREATE TABLE traitements(
 	Desc_traitement TEXT NOT NULL,
 	id_modalite MEDIUMINT NOT NULL,
 	image TINYTEXT,
-	video TINYTEXT,
 	PRIMARY KEY (id_traitement),
 	UNIQUE KEY(nom_traitement),
 	FOREIGN KEY (id_modalite) REFERENCES modalites(id_modalite)
