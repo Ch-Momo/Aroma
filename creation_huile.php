@@ -29,6 +29,8 @@
 			<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
 
 			<link rel="stylesheet" type="text/css" href="creation_huile.css" title="style" />
+
+			<script src="creation_huile.js"></script>
   		
   	</head>
   	<body>	<nav id="menu">
