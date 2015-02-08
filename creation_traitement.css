@@ -1,0 +1,165 @@
+#contenu{
+	border : 2px solid black;
+	text-align: none;
+	margin-top : 50px;
+	margin-left: auto;
+  	margin-right: auto;
+ 	width: 823px; /* largeur obligatoire pour être centré */
+ 	padding-left: 40px;
+ 	padding-right: 40px;
+
+}
+
+#menu{
+	text-align: center;	
+}
+
+
+/*
+	nav.
+*/
+ul {
+  text-align: left;
+  display: inline;
+  margin: 0;
+  padding: 15px 4px 17px 0;
+  list-style: none;
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.15);
+}
+ul li {
+  font: bold 12px/18px sans-serif;
+  display: inline-block;
+  margin-right: -4px;
+  position: relative;
+  padding: 15px 20px;
+  background: #fff;
+  cursor: pointer;
+  -webkit-transition: all 0.2s;
+  -moz-transition: all 0.2s;
+  -ms-transition: all 0.2s;
+  -o-transition: all 0.2s;
+  transition: all 0.2s;
+}
+ul li:hover {
+  background: #555;
+  color: #fff;
+}
+ul li ul {
+  padding: 0;
+  position: absolute;
+  top: 48px;
+  left: 0;
+  width: 150px;
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+  -webkit-transiton: opacity 0.2s;
+  -moz-transition: opacity 0.2s;
+  -ms-transition: opacity 0.2s;
+  -o-transition: opacity 0.2s;
+  -transition: opacity 0.2s;
+}
+ul li ul li { 
+  background: #555; 
+  display: block; 
+  color: #fff;
+  text-shadow: 0 -1px 0 #000;
+}
+ul li ul li:hover { background: #666; }
+ul li:hover ul {
+  display: block;
+  opacity: 1;
+  visibility: visible;
+}
+
+
+
+body {
+  font: normal  'trebuchet ms', arial, sans-serif;
+  background: #E3CAA1;
+  
+}
+
+
+
+#contactForm
+{
+  margin: 20px auto;
+  width: 300px;
+  padding: 30px 25px;
+  background: white;
+  border: 1px solid #c4c4c4;
+}
+
+label
+{
+margin-bottom:2px;
+font-size:14px;
+color:#666;
+}
+
+input[type="text"] {
+  width: 285px;
+  height: 30px;
+  margin-bottom: 25px;
+  padding-left:10px;
+  font-size: 15px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+textarea
+{
+
+  height: 100px;
+  margin-bottom: 25px;
+  padding:10px;
+  font-size: 15px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+input[type="text"]:focus, textarea:focus {
+    border-color:#6e8095;
+    outline: none;
+}
+
+input[type="submit"]
+{
+  width: 50%;
+  height: 50px;
+  padding: 0;
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
+  background: #12B555;
+  border: 0;
+  border-radius: 5px;
+  cursor: pointer; 
+  outline:0;
+}
+
+#boutonCreation{
+	text-align: center;
+}
+
+/*
+  Gestion des formulaires.
+*/
+
+#TraitExisteDeja{
+  color: red;
+  margin-left: 1em;
+  display: none;
+}
+
+#pathoSaisieChamp{
+  color: red;
+  margin-left: 1em;
+  display: none;
+}

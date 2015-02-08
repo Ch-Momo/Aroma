@@ -1,5 +1,96 @@
 <?php
 
+function creerChampsPathologies($bd){
+	
+		echo '<input list="pathologie" name="pathologie" required autocomplete="off" placeholder="Entrez pathologie 1"/><datalist id="pathologie"><option></option>';
+		genereListboxPathologie($bd);
+		echo '</datalist><span id="pathoSaisieChamp">Saisir une pathologie valide</span></br></br>';
+		
+	$i=2;
+	while($i<6){
+		echo '<input id="papa" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Entrez pathologie '.$i.'"/><span id="pathoSaisieChamp">Saisir une pathologie valide</span><datalist id="pathologie'.$i.'"><option></option>';
+		genereListboxPathologie($bd);
+		echo '</datalist></br></br>';
+		$i++;
+	}
+	
+}
+
+
+function creationEtTestFormulaire($bd){
+	
+
+
+	if (!empty($_POST))
+	{
+	 if(isset($_POST['conf']))
+	 {
+
+		if((trim($_POST['pathologie'])=='' || trim($_POST['pathologie2'])=='' || trim($_POST['pathologie3'])=='' || trim($_POST['pathologie4'])=='' || trim($_POST['pathologie5'])=='')){
+			
+			echo "<b>Veuillez choisir 5 pathologies ! !</b>"; 
+		
+		if(trim($_POST['description'])=='')
+			
+			echo  "<b>Le champ description est vide !</b>";
+		
+		if($_POST['modalite']=='0')
+			
+			echo  "<b>Veuiller choisir 3 modalités !</b>";
+		}
+
+		else
+		{
+		//Si le traitement existe déjà, renvoie message d'erreur
+			if(traitementExiste($bd, $_POST['nom']))
+			{
+				
+				 echo '<p>Ce traitement existe déjà !</p>'; 
+			}
+			
+		//Sinon on crée le traitement
+			else
+			{
+			   
+			creerTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['modalite']);
+			
+			$idtraitement = recupererIdtraitement($bd, $_POST['nom']);
+
+			ajouterPathologie($bd, $_POST['pathologie'], $idtraitement);
+
+			echo '<p>Traitement ajouté avec succès</p> </section>';
+			
+
+			if(!empty($_POST['pathologie2'])){
+				
+			ajouterPathologie($bd, $_POST['pathologie2'], $idtraitement);
+			
+			}
+					
+			if(!empty($_POST['pathologie3'])){
+						
+			ajouterPathologie($bd, $_POST['pathologie3'], $idtraitement);
+
+			}
+					
+			if(!empty($_POST['pathologie4'])){
+				
+			ajouterPathologie($bd, $_POST['pathologie4'], $idtraitement);
+			
+			}
+				
+			if(!empty($_POST['pathologie5'])){				
+				
+			ajouterPathologie($bd, $_POST['pathologie5'], $idtraitement);
+
+		}	
+		}
+	}
+  }
+}
+
+
+}
 
 function afficheTraitements($bd)
 {
@@ -411,10 +502,10 @@ function ajouterPathologieM($bd, $pathologie, $idtraitement){
 }
 
 
-function creerTraitement($bd, $nom, $decription, $modalite, $image, $video){
+function creerTraitement($bd, $nom, $decription, $modalite){
 
 
- $sql = 'INSERT INTO traitements (nom_traitement, Desc_traitement, id_modalite, image, video) VALUES (:nom, :description, :modalite, :image, :video)';
+ $sql = 'INSERT INTO traitements (nom_traitement, Desc_traitement, id_modalite) VALUES (:nom, :description, :modalite)';
 			
 	    try
         {
@@ -422,8 +513,6 @@ function creerTraitement($bd, $nom, $decription, $modalite, $image, $video){
                 $req->bindValue(':nom',htmlentities($nom));
                 $req->bindValue(':description',htmlentities($decription));
 				$req->bindValue(':modalite',htmlentities($modalite));
-				$req->bindValue(':image',htmlentities($image));
-				$req->bindValue(':video',htmlentities($video));
                 $req->execute();
 				
         }
@@ -559,9 +648,9 @@ function miseAjourPathologies($bd, $pathologie, $nom, $anciennePatho){
 }
 
 
-function miseAjourTraitement($bd, $nom, $description, $modalite, $image, $video, $idtraitement){
+function miseAjourTraitement($bd, $nom, $description, $modalite, $idtraitement){
 
-  $sql = 'UPDATE traitements SET nom_traitement=:nom, Desc_traitement=:description, id_modalite=:modalite, image=:image, video=:video WHERE id_traitement=:idtraitement';
+  $sql = 'UPDATE traitements SET nom_traitement=:nom, Desc_traitement=:description, id_modalite=:modalite WHERE id_traitement=:idtraitement';
 			
 	  try
           {
@@ -569,8 +658,6 @@ function miseAjourTraitement($bd, $nom, $description, $modalite, $image, $video,
                 $req->bindValue(':nom',htmlentities($nom));
                 $req->bindValue(':description',htmlentities($description));
 				$req->bindValue(':modalite',htmlentities($modalite));
-				$req->bindValue(':image',htmlentities($image));
-				$req->bindValue(':video',htmlentities($video));
 				$req->bindValue(':idtraitement',htmlentities($idtraitement));
                 $req->execute();
 				
