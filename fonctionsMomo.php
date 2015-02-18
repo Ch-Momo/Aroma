@@ -2,14 +2,14 @@
 
 function listboxFamilles($bd){
 	try{
-		echo '<input name="famille" list="choixFamille" type="text" autocomplete="off" placeholder="Entrez le nom de sa famille"/>
+		echo '<input name="famille" list="choixFamille" type="text" autocomplete="off" placeholder="Entrez le nom de sa famille" id="form_famille" />
 			<datalist  id="choixFamille">';
 		$req=$bd->prepare('SELECT*FROM familles;');
 		$req->execute();
 		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
 			echo'<option value="'.$rep['nom_famille'].'">'.$rep['nom_famille'].'</option>;';
 		}
-		echo'</datalist>';
+		echo'</datalist> <span id="err_famille" class="vide">Ce champ doit contenir au moins 6 caractères</span>';
 	}catch(PDOException $e){
 		die('Erreur ! '.$e->getMessage().'</body></html>');
 	}
@@ -20,14 +20,28 @@ function listboxFamilles_prerempli($bd,$tab){
 		$req->bindValue(':id_famille',$tab['id_famille']);
 		$req->execute();
 		$rep=$req->fetch(PDO::FETCH_ASSOC);
-		echo '<input name="famille" list="choixFamille" type="text" autocomplete="off" value="'.$rep['nom_famille'].'" placeholder="Entrez le nom de sa famille"/>
+		echo '<input name="famille" list="choixFamille" type="text" autocomplete="off" value="'.$rep['nom_famille'].'" placeholder="Entrez le nom de sa famille" id="form_famille"/>
 			<datalist  id="choixFamille">';
 		$req=$bd->prepare('SELECT*FROM familles;');
 		$req->execute();
 		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
 			echo'<option value="'.$rep['nom_famille'].'">'.$rep['nom_famille'].'</option>;';
 		}
-		echo'</datalist>';
+		echo'</datalist><span id="err_famille" class="vide">Ce champ doit contenir au moins 6 caractères</span>';
+	}catch(PDOException $e){
+		die('Erreur ! '.$e->getMessage().'</body></html>');
+	}
+}
+function listboxFamilles_precreation($bd,$tab){
+	try{
+		echo '<input name="famille" list="choixFamille" type="text" autocomplete="off" placeholder="Entrez le nom de sa famille" id="form_famille" value="'.$tab['famille'].'"/>
+			<datalist  id="choixFamille">';
+		$req=$bd->prepare('SELECT*FROM familles;');
+		$req->execute();
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			echo'<option value="'.$rep['nom_famille'].'">'.$rep['nom_famille'].'</option>;';
+		}
+		echo'</datalist> <span id="err_famille" class="vide">Ce champ doit contenir au moins 6 caractères</span>';
 	}catch(PDOException $e){
 		die('Erreur ! '.$e->getMessage().'</body></html>');
 	}
@@ -81,13 +95,13 @@ function listboxConstituants($bd,$numero){
 	try{
 		$req=$bd->prepare('SELECT*FROM constituants;');
 		$req->execute();
-		echo '<input name="constituant'.$numero.'" list="choixConstituant" type="text" autocomplete="off" placeholder="Double cliquez pour choisir..."/>
+		echo '<input name="constituant'.$numero.'" list="choixConstituant" type="text" autocomplete="off" placeholder="Double cliquez pour choisir..." id="constituant'.$numero.'" class="constituants_pourcentages"/>
 			<datalist  id="choixConstituant">';
 		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
 			echo'<option value="'.$rep['nom_constituant'].'">'.$rep['nom_constituant'].'</option>;';
 		}
 		echo'</datalist>';
-		echo ' à  <input type="text" name="pourcentage'.$numero.'" size="1"/>%';
+		echo ' <img src="images/fleche.png" /> <input type="text" name="pourcentage'.$numero.'" id="pourcentage'.$numero.'" class="constituants_pourcentages"/> %';
 
 	}catch(PDOException $e){
 		die('Erreur ! '.$e->getMessage().'</body></html>');
@@ -129,14 +143,34 @@ function listboxConstituants_prerempli($bd,$tab){
 		for($numero=1;$numero<6;$numero++){
 			$req2=$bd->prepare('SELECT*FROM constituants;');
 			$req2->execute();
-			echo '<input name="constituant'.$numero.'" list="choixConstituant" type="text" autocomplete="off" value="'.$nom_constituants[$numero].'" placeholder="Double cliquez pour choisir..."/>
+			echo '<input name="constituant'.$numero.'" list="choixConstituant" type="text" autocomplete="off" value="'.$nom_constituants[$numero].'" placeholder="Double cliquez pour choisir..." id="constituant'.$numero.'" class="constituants_pourcentages"/>
 				<datalist  id="choixConstituant">';
 			while($rep2=$req2->fetch(PDO::FETCH_ASSOC)){
 				echo'<option value="'.$rep2['nom_constituant'].'">'.$rep2['nom_constituant'].'</option>;';
 			}
 			echo'</datalist>';
-			echo ' à  <input type="text" name="pourcentage'.$numero.'" size="1" value="'.$pourcentages[$numero].'"/>%<br/>';
+			echo ' <img src="images/fleche.png" />  <input type="text" name="pourcentage'.$numero.'" size="1" value="'.$pourcentages[$numero].'" id="pourcentage'.$numero.'" class="constituants_pourcentages"/> %<br/>';
 	}
+
+	}catch(PDOException $e){
+		die('Erreur ! '.$e->getMessage().'</body></html>');
+	}
+}
+
+function listboxConstituants_precreation($bd,$numero,$tab){
+	/*
+		Affichage d'une zone texte avec des constituants.
+	*/
+	try{
+		$req=$bd->prepare('SELECT*FROM constituants;');
+		$req->execute();
+		echo '<input name="constituant'.$numero.'" list="choixConstituant" type="text" autocomplete="off" placeholder="Double cliquez pour choisir..." id="constituant'.$numero.'" class="constituants_pourcentages" value="'.$tab['constituant'.$numero].'"/>
+			<datalist  id="choixConstituant">';
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			echo'<option value="'.$rep['nom_constituant'].'">'.$rep['nom_constituant'].'</option>;';
+		}
+		echo'</datalist>';
+		echo ' à  <input type="text" name="pourcentage'.$numero.'" id="pourcentage'.$numero.'"/ class="constituants_pourcentages" value="'.$tab['pourcentage'.$numero].'"> %';
 
 	}catch(PDOException $e){
 		die('Erreur ! '.$e->getMessage().'</body></html>');
@@ -147,7 +181,7 @@ function listboxProprietesEtNotations($bd,$numero){
 	try{
 		$req=$bd->prepare('SELECT*FROM proprietes;');
 		$req->execute();
-		echo '<input name="propriete'.$numero.'" list="choixPropriete" type="text"/ autocomplete="off" placeholder="Double cliquez pour choisir...">
+		echo '<input name="propriete'.$numero.'" list="choixPropriete" type="text"/ autocomplete="off" placeholder="Double cliquez pour choisir..." id="propriete'.$numero.'" class="proprietes_notations">
 			<datalist  id="choixPropriete">';
 		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
 			echo'<option value="'.$rep['nom_propriete'].'">'.$rep['nom_propriete'].'</option>;';
@@ -156,10 +190,10 @@ function listboxProprietesEtNotations($bd,$numero){
 		/*
 			Les notations :
 		*/
-		echo ' ->';
+		echo '<img src="images/fleche.png" /> ';
 		$req2=$bd->prepare('SELECT*FROM notations;');
 		$req2->execute();
-		echo '<input name="notation'.$numero.'" list="choixNotation" type="text" size ="1" autocomplete="off" placeholder="Sélectionnez la notation correspendante..."/>
+		echo '<input name="notation'.$numero.'" list="choixNotation" type="text" size ="1" autocomplete="off" id="notation'.$numero.'" class="proprietes_notations"/>
 			<datalist id="choixNotation">';
 		while($rep2=$req2->fetch(PDO::FETCH_ASSOC)){
 			echo'<option value="'.$rep2['signe_notation'].'">'.$rep2['signe_notation'].'</option>;';
@@ -215,16 +249,16 @@ function listboxProprietesEtNotations_prerempli($bd,$tab){
 		for($numero=1;$numero<6;$numero++){
 			$req2=$bd->prepare('SELECT*FROM proprietes;');
 			$req2->execute();
-			echo '<input name="propriete'.$numero.'" list="choixPropriete" type="text" autocomplete="off" value="'.$nom_proprietes[$numero].'" placeholder="Double cliquez pour choisir..."/>
+			echo '<input name="propriete'.$numero.'" list="choixPropriete" type="text" autocomplete="off" value="'.$nom_proprietes[$numero].'" placeholder="Double cliquez pour choisir..." id="propriete'.$numero.'" class="proprietes_notations"/>
 				<datalist  id="choixPropriete">';
 			while($rep2=$req2->fetch(PDO::FETCH_ASSOC)){
 				echo'<option value="'.$rep2['nom_propriete'].'">'.$rep2['nom_propriete'].'</option>;';
 			}
 			echo'</datalist>';
-			echo ' =======>	 	';
+			echo '<img src="images/fleche.png" /> ';
 			$req3=$bd->prepare('SELECT*FROM notations;');
 			$req3->execute();
-			echo '<input name="notation'.$numero.'" list="choixNotation" type="text" autocomplete="off" value="'.$signe_notations[$numero].'" placeholder="Sélectionnez la notation correspendante..."/>
+			echo '<input name="notation'.$numero.'" list="choixNotation" type="text" autocomplete="off" value="'.$signe_notations[$numero].'" id="notation'.$numero.'" class="proprietes_notations"/>
 				<datalist  id="choixNotation">';
 			while($rep3=$req3->fetch(PDO::FETCH_ASSOC)){
 				echo'<option value="'.$rep3['signe_notation'].'">'.$rep3['signe_notation'].'</option>;';
@@ -232,6 +266,34 @@ function listboxProprietesEtNotations_prerempli($bd,$tab){
 			echo'</datalist><br/>';
 		}
 
+	}catch(PDOException $e){
+		die('Erreur ! '.$e->getMessage().'</body></html>');
+	}
+}
+
+
+function listboxProprietesEtNotations_precreation($bd,$numero,$tab){
+	try{
+		$req=$bd->prepare('SELECT*FROM proprietes;');
+		$req->execute();
+		echo '<input name="propriete'.$numero.'" list="choixPropriete" type="text"/ autocomplete="off" placeholder="Double cliquez pour choisir..." id="propriete'.$numero.'" class="proprietes_notations" value="'.$tab['propriete'.$numero].'">
+			<datalist  id="choixPropriete">';
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			echo'<option value="'.$rep['nom_propriete'].'">'.$rep['nom_propriete'].'</option>;';
+		}
+		echo'</datalist>';
+		/*
+			Les notations :
+		*/
+		echo ' ->';
+		$req2=$bd->prepare('SELECT*FROM notations;');
+		$req2->execute();
+		echo '<input name="notation'.$numero.'" list="choixNotation" type="text" size ="1" autocomplete="off" placeholder="Sélectionnez la notation correspendante..." id="notation'.$numero.'" class="proprietes_notations" value="'.$tab['notation'.$numero].'"/>
+			<datalist id="choixNotation">';
+		while($rep2=$req2->fetch(PDO::FETCH_ASSOC)){
+			echo'<option value="'.$rep2['signe_notation'].'">'.$rep2['signe_notation'].'</option>;';
+		}
+		echo'</datalist>';
 	}catch(PDOException $e){
 		die('Erreur ! '.$e->getMessage().'</body></html>');
 	}
@@ -268,16 +330,18 @@ function listboxModeEmploi_prerempli($bd,$tab){
 		}
 		$req=$bd->prepare('SELECT*FROM modeEmploi;');
 		$req->execute();
+		echo '<div class="modal-2">';
 		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			echo '<div class="checkbox inline">';
 			if(in_array($rep['id_modeEmploi'],$id_modeEmploi)){
-				echo '<label><p>'.$rep['nom_modeEmploi'].'</p>';
-				echo'<input type="checkbox" name="modeEmploi[]" value="'.$rep['nom_modeEmploi'].'" checked></label>';
+				echo'<input type="checkbox" name="modeEmploi[]" value="'.$rep['nom_modeEmploi'].'" checked><label><p>'.$rep['nom_modeEmploi'].'</label>';
 			}
 			else{
-				echo '<label><p>'.$rep['nom_modeEmploi'].'</p>';
-				echo'<input type="checkbox" name="modeEmploi[]" value="'.$rep['nom_modeEmploi'].'"></label>';
+				echo'<input type="checkbox" name="modeEmploi[]" value="'.$rep['nom_modeEmploi'].'"><label><p>'.$rep['nom_modeEmploi'].'</label>';
 			}
+			echo '</div>';
 	}
+	echo '</div>';
 	}catch(PDOException $e){
 		die('Erreur ! '.$e->getMessage().'</body></html>');
 	}
@@ -289,146 +353,157 @@ function valeurs_distincts($v1,$v2,$v3,$v4,$v5){
 
 function formulaire_creation_huile($bd){
 	echo '<form method="post" enctype="multipart/form-data">
-			<p> Nom : <input  type="text" name="nom" placeholder="Entrez le nom de l\'huile" onFocus="this.style.backgroundColor=\'#7CF2C6\'" onBlur="this.style.backgroundColor=\'white\'" id="form_nom" /> <span id="err_nom"> Ce champ doit contenir au moins 6 caractères</span></p>
-			<p> Nom latin : <input type="text" name="nom_latin" placeholder="Entrez son nom latin" onFocus="this.style.backgroundColor=\'#7CF2C6\'" onBlur="this.style.backgroundColor=\'white\'"/ id="form_latin"/> <span id="err_latin"> Ce champ doit contenir au moins 6 caractères</span></p>
-			<p> Famille de l\'huile : ';
+			<p> Nom : <input  type="text" name="nom" placeholder="Entrez le nom de l\'huile" id="form_nom" /> <span id="err_nom" class="vide">Ce champ doit contenir au moins 6 caractères</span></p>
+			<p> Nom latin : <input type="text" name="nom_latin" placeholder="Entrez son nom latin" id="form_latin"/> <span id="err_latin" class="vide">Ce champ doit contenir au moins 6 caractères</span></p>
+			<p> Famille de l\'huile :';
 	listboxFamilles($bd);
 	echo '</p>';
 	echo '<p> Organe producteur :';
 	listboxOrganes($bd);
-	echo '</p>';
-	echo '<p> Origine géographique :<input type="text" name="origine_geo" placeholder="Entrez son origine géographique" onFocus="this.style.backgroundColor=\'#7CF2C6\'" onBlur="this.style.backgroundColor=\'white\'"/ id="form_origine_geo"/>  </p> 
-			<p> Constituants/Pourcentages:</p>';
+	echo '</p><br/>';
+	echo '<p> Origine géographique :<input type="text" name="origine_geo" placeholder="Entrez son origine géographique" id="form_origine_geo"/> <span id="err_origine_geo" class="vide">Champ invalide</span></p> 
+			<p> Constituants/Pourcentages:<span id="err_constituants_pourcentages" class="vide">Champs invalides</span> </p>';
 	for($i=1;$i<6;$i++){
 		listboxConstituants($bd,$i);
 		echo'<br/>';
 	}
-	echo '<p> Proprietes/Notations :  </p>';
+	echo '<br/><p> Proprietes/Notations : <span id="err_proprietes_notations" class="vide">Champs invalides</span> </p>';
 	for($i=1;$i<6;$i++){
 		listboxProprietesEtNotations($bd,$i);
 		echo'<br/>';
 	}
-	echo '<p> Conseils : </p> <textarea cols="60" rows="5" name="conseils" placeholder="Donnez quelques conseils sur l\'huile..." ></textarea>
-			<p> Indications : </p> <textarea cols="60" rows="5" name="indications" placeholder="Donnez quelques indications sur l\'huile..."></textarea>
-			<p> Mode(s) d\'emploi : </p> ';
+	echo '<br/><p> Conseils : <span id="err_conseils" class="vide">Champs invalides</span> </p> <textarea cols="60" rows="5" name="conseils" placeholder="Donnez quelques conseils sur l\'huile..." id="form_conseils"></textarea>
+			<p> <br/>Indications : <span id="err_indications" class="vide">Champs invalides</span></p> <textarea cols="60" rows="5" name="indications" placeholder="Donnez quelques indications sur l\'huile..." id="form_indications"></textarea>
+			<p><br/> Mode(s) d\'emploi : </p> ';
 	listboxModeEmploi($bd);
-	echo '<p> Message enérgétique : </p> <textarea cols="60" rows="5" name="message_energetique" placeholder="Saisissez un message enérgétique..."></textarea>
-			<p> Sélectionnez une image :<input type="file" name="image"/>  </p> 
-			<br/><br/><div id="boutonCreation"><input class="btn"  type="submit" value="Créer une huile !" /></div>
+	echo '<p> Message enérgétique : <span id="err_message" class="vide">Champs invalides</span> </p> <textarea cols="60" rows="5" name="message_energetique" placeholder="Saisissez un message enérgétique..." id="form_message"></textarea>
+			<p><br/> Sélectionnez une image :<br/> <br/><input type="file" name="image"/>  </p> 
+			<br/><br/><div ><input type="submit" value="Créer l\'huile !" /><br/></div>
 		</form>';
 
 }
 
 function formulaire_creation_huile_prerempli($bd,$tab){
 	echo '<form method="post" enctype="multipart/form-data">
-			<p> Nom : </p> <input type="text" name="nom" value="'.$tab['nom'].'" placeholder="Entrez le nom de l\'huile"/>
-			<p> Nom latin : </p> <input type="text" name="nom_latin" value="'.$tab['nom_latin'].'" placeholder="Entrez son nom latin"/>
-			<p> Famille de l\'huile : </p>';
-	listboxFamilles($bd,$tab);
+			<p> Nom : <input type="text" name="nom" value="'.$tab['nom'].'" placeholder="Entrez le nom de l\'huile"  id="form_nom"/><span id="err_nom" class="vide">Ce champ doit contenir au moins 6 caractères</span></p> 
+			<p> Nom latin : <input type="text" name="nom_latin" value="'.$tab['nom_latin'].'" placeholder="Entrez son nom latin" id="form_latin"/> <span id="err_latin" class="vide">Ce champ doit contenir au moins 6 caractères</span></p> 
+			<p> Famille de l\'huile : ';
+	listboxFamilles_precreation($bd,$tab);
+		echo ' </p><br/>';
 	echo '<p> Organe producteur :</p>';
 	listboxOrganes($bd);
-	echo '<p> Origine géographique : </p> <input type="text" name="origine_geo" value="'.$tab['origine_geo'].'" placeholder="Entrez son origine géographique"/>
-			<p> Constituants/Pourcentages:</p>';
+	echo '</p><br/>';
+	echo '<p> Origine géographique : <input type="text" name="origine_geo" value="'.$tab['origine_geo'].'" placeholder="Entrez son origine géographique" id="form_origine_geo"/><span id="err_origine_geo" class="vide">Champ invalide</span> </p> 
+			<p> Constituants/Pourcentages:<span id="err_constituants_pourcentages" class="vide">Champs invalides</span> </p>';
 	for($i=1;$i<6;$i++){
-		listboxConstituants($bd,$i);	
+		listboxConstituants_precreation($bd,$i,$tab);	
 		echo'<br/>';
 	}
-	echo '<p> Proprietes/Notations :  </p>';
+	echo '<p> <br/>Proprietes/Notations : <span id="err_proprietes_notations" class="vide">Champs invalides</span></p>';
 	for($i=1;$i<6;$i++){	
-		listboxProprietesEtNotations($bd,$i);
+		listboxProprietesEtNotations_precreation($bd,$i,$tab);
 		echo'<br/>';
 	}
-	echo '<p> Conseils : </p> <textarea cols="60" rows="5" name="conseils" placeholder="Donnez quelques conseils sur l\'huile..." >'.$tab['conseils'].'</textarea>
-			<p> Indications : </p> <textarea cols="60" rows="5" name="indications" placeholder="Donnez quelques indications sur l\'huile..." >'.$tab['indications'].'</textarea>
-			<p> Mode(s) d\'emploi : </p> ';
+	echo '<p> <br/>Conseils : <span id="err_conseils" class="vide">Champs invalides</span> </p> <textarea cols="60" rows="5" name="conseils" placeholder="Donnez quelques conseils sur l\'huile..." id="form_conseils" >'.$tab['conseils'].'</textarea>
+			<p> <br/>Indications : <span id="err_indications" class="vide">Champs invalides</span></p> <textarea cols="60" rows="5" name="indications" placeholder="Donnez quelques indications sur l\'huile..." id="form_indications">'.$tab['indications'].'</textarea>
+			<p> <br/>Mode(s) d\'emploi : </p> ';
 	listboxModeEmploi($bd);
-	echo '<p> Message enérgétique : </p> <textarea cols="60" rows="5" name="message_energetique" placeholder="Saisissez un message enérgétique..." >'.$tab['message_energetique'].'</textarea>
-	<p> Sélectionnez une image :<input type="file" name="image" />  </p> 
-			<br/><br/><input type="submit" value="Créer une huile !" />
+	echo '<p> Message enérgétique : <span id="err_message" class="vide">Champs invalides</span></p> <textarea cols="60" rows="5" name="message_energetique" placeholder="Saisissez un message enérgétique..." id="form_message">'.$tab['message_energetique'].'</textarea>
+	<p> <br/> Sélectionnez une image :<br/> <br/><input type="file" name="image" />  </p> 
+			<br/><br/><input type="submit" id="boutonCreation" value="Créer l\'huile !" />
 		</form>';
 
 }
 
 function formulaire_modification_huile($bd,$tab){
 	echo '<form method="post" enctype="multipart/form-data">
-			<p> Nom : </p> <input type="text" name="nom" value="'.$tab['nom_huile'].'" placeholder="Entrez le nom de l\'huile"/>
-			<p> Nom latin : </p> <input type="text" name="nom_latin" value="'.$tab['nom_latin'].'" placeholder="Entrez son nom latin"/>
-			<p> Famille de l\'huile : </p>';
+			<p> Nom : <input type="text" name="nom" value="'.$tab['nom_huile'].'" placeholder="Entrez le nom de l\'huile" id="form_nom"/><span id="err_nom" class="vide">Ce champ doit contenir au moins 6 caractères</span></p> 
+			<p> Nom latin :<input type="text" name="nom_latin" value="'.$tab['nom_latin'].'" placeholder="Entrez son nom latin"  id="form_latin"/><span id="err_latin" class="vide">Ce champ doit contenir au moins 6 caractères</span></p>
+			<p> Famille de l\'huile : ';
 	listboxFamilles_prerempli($bd,$tab);
-	echo '<p> Organe producteur :</p>';
+	echo '</p><p> Organe producteur :</p>';
 	listboxOrganes_prerempli($bd,$tab);
-	echo '<p> Origine géographique : </p> <input type="text" name="origine_geo" value="'.$tab['origine_geo'].'" placeholder="Entrez son origine géographique"/>
-			<p> Constituants/Pourcentages:</p>';
+	echo '</p>';
+	echo '<p> Origine géographique : <input type="text" name="origine_geo" value="'.$tab['origine_geo'].'" placeholder="Entrez son origine géographique"id="form_origine_geo"/><span id="err_origine_geo" class="vide">Champ invalide</span> </p> 
+			<p> Constituants/Pourcentages:<span id="err_constituants_pourcentages" class="vide">Champs invalides</span></p>';
 	listboxConstituants_prerempli($bd,$tab);
-	echo '<p> Proprietes/Notations :  </p>';	
+	echo '<p> <br/>Proprietes/Notations :  <span id="err_proprietes_notations" class="vide">Champs invalides</span></p>';	
 	listboxProprietesEtNotations_prerempli($bd,$tab);
 
-	echo '<p> Conseils : </p> <textarea cols="60" rows="5" name="conseils" "Donnez quelques conseils sur l\'huile... >'.$tab['conseils'].'</textarea>
-			<p> Indications : </p> <textarea cols="60" rows="5" name="indications" placeholder="Donnez quelques indications sur l\'huile...">'.$tab['indications'].'</textarea>
-			<p> Mode(s) d\'emploi : </p> ';
+	echo '<p> <br/>Conseils : <span id="err_conseils" class="vide">Champs invalides</span>  </p> <textarea id="form_conseils" cols="60" rows="5" name="conseils" placeholder="Donnez quelques conseils sur l\'huile..." >'.$tab['conseils'].'</textarea>
+			<p> <br/>Indications : <span id="err_indications" class="vide">Champs invalides</span></p> <textarea cols="60" rows="5" name="indications" placeholder="Donnez quelques indications sur l\'huile..." id="form_indications">'.$tab['indications'].'</textarea>
+			<p> <br/>Mode(s) d\'emploi : </p> ';
 	listboxModeEmploi_prerempli($bd,$tab);
-	echo '<p> Message enérgétique : </p> <textarea cols="60" rows="5" name="message_energetique"  placeholder="Saisissez un message enérgétique..." >'.$tab['message_energetique'].'</textarea>
+	echo '<p> Message enérgétique : <span id="err_message" class="vide">Champs invalides</span></p> <textarea cols="60" rows="5" name="message_energetique"  placeholder="Saisissez un message enérgétique..." id="form_message">'.$tab['message_energetique'].'</textarea>
 	<input type="hidden" name="image_existante" value="'.$tab['image'].'" /><br/>
-	<img src="images_huiles/'.$tab['image'].'" alt="" width="400" height="300"/>
-	<p> Sélectionnez une image si vous voulez modifier l\'image existante :<br/><input type="file" name="image" />  </p> 
+	<p> <br/>Image actuelle :</p><img src="images_huiles/'.$tab['image'].'" alt="" width="400" height="300" id="img_huile"/>
+	<p> <br/> Sélectionnez une image si vous voulez modifier l\'image existante :<br/><br/><input type="file" name="image" />  </p> 
 				<br/><br/><input type="submit" value="Modifier l\'huile !" />
 		</form>';
 
 }
 function verification_formulaire_creation_huile($bd,&$tab){
+	$err_nom=false;
+	$err_const=false;
+	$err_pourc=false;
+	$err_prop=false;
+	$err_notation=false;
+	$err_conseils=false;
+	$err_img=false;
 	$formValide=true;
 	/*
 		Vérification des données que l'utilisateur a saisi.
 	*/
 	if(strlen(trim($tab['nom']))<6 or strlen(trim($tab['nom_latin']))<6 or strlen(trim($tab['famille']))<6 or strlen(trim($tab['origine_geo']))<6){
-		echo '<p> Le nom, le nom de la famille de l\'huile et son origine géographique doivent contenir au moins 6 caractères.<br/></p>';
 		$formValide=false;
+		$err_nom=true;
 	}
 	/*	
 		Vérifier que les constituants ne sont pas des chaines vides et qu'ils sont distincts
 	*/
 	if(trim($tab['constituant1'])=='' or trim($tab['constituant2'])=='' or trim($tab['constituant3'])=='' or trim($tab['constituant4'])=='' or trim($tab['constituant5'])=='' or !valeurs_distincts($tab['constituant1'],$tab['constituant2'],$tab['constituant3'],$tab['constituant4'],$tab['constituant5'])){
-		echo '<p> Vérifiez que vous avez bien saisi tous les constituants de l\'huile et qu\'ils sont distincts.<br/></p>';
 		$formValide=false;
+		$err_const=true;
 	}
 	/*
 		Vérifier les bonnes valeurs des pourcentages
 	*/
 	if($tab['pourcentage1']>100 or $tab['pourcentage1']<1 or $tab['pourcentage4']>100 or $tab['pourcentage4']<1 or $tab['pourcentage2']>100 or $tab['pourcentage2']<1 or $tab['pourcentage3']>100 or $tab['pourcentage3']<1 or $tab['pourcentage5']>100 or $tab['pourcentage5']<1 or($tab['pourcentage1']+ $tab['pourcentage2']+ $tab['pourcentage3']+ $tab['pourcentage4']+ $tab['pourcentage5']>100)){
-		echo '<p> Vérifiez les bonnes valeurs des pourcentages.<br/></p>';
 		$formValide=false;
+		$err_pourc=true;
 	}
 	/*	
 		Vérifier que les propriétés ne sont pas des chaines vides et qu'ils sont distincts
 	*/
 	if(trim($tab['propriete1'])=='' or trim($tab['propriete2'])=='' or trim($tab['propriete3'])=='' or trim($tab['propriete4'])=='' or trim($tab['propriete5'])=='' or !valeurs_distincts($tab['propriete1'],$tab['propriete2'],$tab['propriete3'],$tab['propriete4'],$tab['propriete5'])){
-		echo '<p> Vérifiez que vous avez bien saisi toutes les propriétés de l\'huile et qu\'elles sont distincts.<br/></p>';
 		$formValide=false;
+		$err_prop=true;
 	}
 	/*
 		Vérifier les notations.
 	*/	
 	if(trim($tab['notation1'])=='' or trim($tab['notation2'])=='' or trim($tab['notation3'])=='' or trim($tab['notation4'])=='' or trim($tab['notation5'])==''){
-		echo '<p> Il faut associer une notation à chaque propriété.<br/></p>';
 		$formValide=false;
+		$err_notation=true;
 	}
 	/*
 		Vérifier les conseils et les indications
 	*/
 	if(trim($tab['conseils'])=='' or trim($tab['indications'])==''){
-		echo '<p> Vous devez saisir un minimum de conseils, d\'indications et un message énergétique.<br/></p>';
 		$formValide=false;
+		$err_conseils=true;
 	}
 	/*
 
 		L'image.
 
 	*/
-	/*if(isset($tab['image_existante']) and $_FILES['image']['size']==0){
+		/*
+	if(isset($tab['image_existante']) and $_FILES['image']['size']==0){
 		$tab['image']['name']=$tab['image_existante'];
 		echo 'OK';
 	}*/
-	$dossier = 'images_huiles/';
+		$dossier = 'images_huiles/';
 		$fichier = basename($_FILES['image']['name']);
 		$taille_maxi = 10000000;
 		$taille = filesize($_FILES['image']['tmp_name']);
@@ -437,13 +512,13 @@ function verification_formulaire_creation_huile($bd,&$tab){
 		//Début des vérifications de sécurité...
 		if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
 		{
-		     echo '<p>Vous devez uploader un fichier de type png, gif, jpg, jpeg, t.</p>';
 		    $formValide=false;
+		    $err_img=true;
 		}
 		if($taille>$taille_maxi)
 		{
-		     echo '<p>La taille de l\'image est trop grande...</p>';
 		     $formValide=false;
+		     $err_img=true;
 		}
 		if($formValide){
 		     $fichier = strtr($fichier, 
@@ -456,12 +531,43 @@ function verification_formulaire_creation_huile($bd,&$tab){
 		     }
 		     else //Sinon (la fonction renvoie FALSE).
 		     {
-		          echo '<p>Echec de l\'upload de l\'image !</p>';
 		          $formValide=false;
+		          $err_img=true;
 		     }
 		 
 		
 		}
+
+	if($formValide==false){
+		echo '<div class="alert alert-danger" role="alert" style="margin-bottom:30px;">';
+		if($err_nom==true){
+			echo '<p> <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Le nom, le nom de la famille de l\'huile et son origine géographique doivent contenir au moins 6 caractères.<br/></p>';
+		}
+		if($err_const==true){
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Vérifiez que vous avez bien saisi tous les constituants de l\'huile et qu\'ils sont distincts.<br/></p>';
+
+		}
+		if($err_pourc==true){
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Vérifiez les bonnes valeurs des pourcentages.<br/></p>';
+
+		}
+		if($err_prop==true){
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Vérifiez que vous avez bien saisi toutes les propriétés de l\'huile et qu\'elles sont distincts.<br/></p>';
+
+		}
+		if($err_notation==true){
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Il faut associer une notation à chaque propriété.<br/></p>';
+
+		}
+		if($err_conseils==true){
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Vous devez saisir un minimum de conseils, d\'indications et un message énergétique.<br/></p>';
+
+		}
+		if($err_img==true){
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Echec de l\'upload de l\'image !</p>';
+		}
+		echo '</div>';
+	}
 
 	return $formValide;
 
@@ -778,5 +884,21 @@ function suppr_huile($bd,$nom_huile){
 	$req->execute();
 
 
+}
+
+function moderateur_existe($bd,$pseudo,$pass){
+	try{
+
+		$req=$bd->prepare('Select distinct * From administrateurs_modérateurs where nom=:pseudo');
+		$req->bindValue(':pseudo',$pseudo);
+		$req->execute();
+		$i=0;
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			$i++;
+		}
+		return $i!=0;
+	}catch(PDOException $e){
+		die('Erreur ! '.$e->getMessage().'</body></html>');
+	}
 }
 ?>

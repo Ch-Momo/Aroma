@@ -1,19 +1,56 @@
+
 <?php 
 	require('connexion.php');
 	require('fonctionsMomo.php');
 	session_start();
 ?>
 
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
- <html>
-  	<head>
-		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-  		<title>Modification d'une huile essentielle</title>
-  		<link rel="stylesheet" type="text/css" href="creation_huile.css" title="style" />
-  	</head>
-  	<body>
-		<h2> Modification d'une HE : </h2>
-		<p> Veuillez sélectionner l'huile à modifier :</p>
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Aroma - Modification d'une huile</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-layers.min.js"></script>
+		<script src="js/init.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/modif_huile.css" title="style" />
+		<noscript>
+		<link rel="stylesheet" href="css/skel.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		</noscript>
+		
+		<script src="js/creation_huile.js"></script>
+		
+	</head>
+	<body class="homepage">
+
+			<?php
+			require("menu.php");
+		?>
+		<!-- Le contenu -->
+			<div id="main" class="wrapper style1">
+				
+					
+					<h2 id="titre"> <img  id="huile" src="images/huile2.png" width="100" length="100"/> <span id="titre">Modification d'une huile essentielle : </p></h2><br/>
+
+
+
+
+				
+  			<p> Veuillez sélectionner l'huile à modifier :</p>
 		<form method="post">
 			<?php
 				echo '<select name="nom_huile_a_modif">';
@@ -22,6 +59,7 @@
 			?>
 			<br/><br/><input type="submit" value="Afficher les caractéristiques"/>
 		</form>
+		
 		<?php
 			$modifiee=false;
 			if(count($_POST)>1){
@@ -35,24 +73,31 @@
 									suppr_huile($bd,$_POST['nom']);
 							}
 							creation_huile($bd,$_POST);
-							echo '<p> <strong> L\'huile a bien été modifiée. </strong></p>';
+							echo '<div class="alert alert-success" role="alert"><p> <strong> L\'huile a bien été modifiée. </strong></p></div>';
 							$modifiee=true;
 					}
 				}
 				else{
-					echo '<p> Veuillez remplir tous les champs nécessaires.</p>';
+					echo '<div class="alert alert-danger" role="alert"><p> Veuillez remplir tous les champs nécessaires.</p></div>';
 				}
 			}
 
 
 			if(isset($_POST['nom_huile_a_modif']) and $_POST['nom_huile_a_modif']!='empty' and $modifiee==false){//premier submit
+				echo '<p style="font-size:20px"> Les caractéristiques actuelles de l\'huile <strong>'.$_POST['nom_huile_a_modif'].' :</strong></p>';
 				formulaire_modification_huile($bd,donnees_huile($bd,$_POST['nom_huile_a_modif']));
 				$_SESSION['nom_huile_modifiee']=$_POST['nom_huile_a_modif'];
 			}
 			else if(isset($_POST['nom']) and $modifiee==false){//deuxieme submit
+				echo '<p style="font-size:20px"> Les caractéristiques actuelles de l\'huile <strong>'.$_SESSION['nom_huile_modifiee'].' :</strong></p>';
 				formulaire_modification_huile($bd,donnees_huile($bd,$_SESSION['nom_huile_modifiee']));
 			}
 		?>
-	</body>
+		</div>
+		<!-- Le Footer -->
+			<div id="footer">
+				
+			</div>
 
+	</body>
 </html>
