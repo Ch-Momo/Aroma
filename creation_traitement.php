@@ -1,46 +1,46 @@
-<!doctype html>
-<html lang="fr">
-	<head>
-		<meta charset="utf-8">
-		<title>Création d'un traitement</title>
-	
-  			<link rel="stylesheet" href="bootstrap/css/bootstrap.min.css"/>
-			<link rel="stylesheet" href="bootstrap/css/bootstrap-theme.min.css"/>
-			<link rel="stylesheet" type="text/css" href="creation_traitement.css"/>
-
-			<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
-
-	</head>
-	
-	
-<body>
-	<nav id="menu">
-		<ul><li>Accueil</li>
-			  <li>Base de données des HE</li>
-			  <li>
-			    Base de donnée de traitements
-			    <ul>
-			      <li>Web Design</li>
-			      <li>Web Development</li>
-			      <li>Illustrations</li>
-			    </ul>
-			  </li>
-			  <li>Connexion</li>
-			  <li>Contact</li>
-		</ul>
-	</nav>
-	
-	
-<div id="contenu">
-
 	<?php 
 		require('connexion.php');
-		//require("entete.php");
 		require('fonctionsUsman.php');
+		session_start();
 
 	?>
+	
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Aroma - Création d'un traitement</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 
-	<body>
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-layers.min.js"></script>
+		<script src="js/init.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/creation_traitement.css" title="style" />
+		<noscript>
+		<link rel="stylesheet" href="css/skel.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		</noscript>
+		
+		<script src="js/creation_traitement.js"></script>
+		
+	</head>
+	<body class="homepage">
+		<?php
+			require("menu.php");
+		?>
+		<!-- Le contenu -->
+			<div id="main" class="wrapper style1">
 
 
 	
@@ -51,10 +51,9 @@ creationEtTestFormulaire($bd);
 <h2> Création d'un traitement </h2>
 </br>
 <form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
-		<p><label> Nom du traitement : *</label>
-		</br> 
+		<p><label> Nom du traitement : *<span id="Ok" class="vide">Valide</span></label>
 		<input type="text" name="nom" id="nom" autocomplete="off" autofocus required placeholder="Entrez le nom du traitement"/></p>
-		<p><label> Pathologie : *</label><p> 
+		<p><label class="nom_patho"> Pathologie : *<span id="pathoSaisieChamp">Saisir une pathologie valide</span></label><p> 
 		<?php creerChampsPathologies($bd); ?>
 		<p><label> Description du traitement : *</label>
 		</br>
@@ -67,21 +66,17 @@ creationEtTestFormulaire($bd);
 				<option value="3">En diffusion</option>
 			</select>
 		</p>
-		</br>
-		<p><label> Lien image : </label>
-		</br>
-		<input type="text" name="image" id="image"/></p>
-		</br>
-		<p> Sélectionnez une image :<input type="file" name="image"/>  </p> 
+		<p> Sélectionnez une image :<input type="file" name="image"/>  </p>	
 		<p> <input type="submit" value="Créer un traitement" name="conf" id="confirmer" /></p>
 </form>
 
-<h2>Traitements de la base de données (brouillon)</h2>
-
-<?php afficheTraitements($bd); 
-
-?>
 </div>
+
+
+		<!-- Le Footer -->
+			<div id="footer">
+				
+			</div>
 </body>
 
 <? //php require("fin.php"); ?>

@@ -1,0 +1,71 @@
+
+/*
+  Gestion des formulaires.
+*/
+
+#boutonCreation{
+	text-align: center;
+}
+
+#TraitExisteDeja{
+  color: red;
+  margin-left: 1em;
+  display: none;
+}
+
+#pathoSaisieChamp{
+  color: red;
+  margin-left: 1em;
+  display: none;
+}
+
+#Ok{
+  color: red;
+  margin-left: 1em;
+  display: none;
+}
+
+
+input:focus{
+    background-color:#BDE680;
+  }
+textarea{
+  resize:none;
+}
+textarea:focus{
+  background-color:#BDE680;
+}
+
+#tableauTraitement {
+
+  height: auto;
+  padding-left: 30px;
+  font-size: 20px;
+  color: #fff;
+  text-align: center;
+  background: #73C743;
+  border: 0;
+
+}
+
+#tableauPathologie{
+
+  height: auto;
+  padding: auto;
+  font-size: 20px;
+  color: #fff;
+  background: #73C743;
+  border: 0;
+  text-align: center;
+}
+
+
+#tableauTraitement th{
+	font-weight: bold;
+  text-align: center;
+}
+
+#tableauPathologie th{
+	font-weight: bold;
+    text-align: center;
+}

@@ -1,17 +1,18 @@
 $(document).ready(function()
 {
-	$('span').keyup(function(event)
+	$('#nom').keyup(function(event)
 		{
-			var texte=$("#TraitExisteDeja").val();
-			if (texte){
-				$('#TraitExisteDeja').show();
+			var texte=$('#nom').val();
+			if (texte.length>6){
+				$('#Ok').show();
 			}
 			else
-				$('#TraitExisteDeja').hide();
+				$('#Ok').hide();
 		});
 		
-	$('#confirmer').click(function(){
-		if($('#papa').val()==''){
+		
+	$('nom_patho').click(function(){
+		if($('nom_patho').val()==''){
 			
 			$('#pathoSaisieChamp').show();
 		}
@@ -20,5 +21,5 @@ $(document).ready(function()
 		
 		
 	});
-		
+	
 });

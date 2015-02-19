@@ -2,13 +2,13 @@
 
 function creerChampsPathologies($bd){
 	
-		echo '<input list="pathologie" name="pathologie" required autocomplete="off" placeholder="Entrez pathologie 1"/><datalist id="pathologie"><option></option>';
+		echo '<input class="nom_patho" list="pathologie" name="pathologie" required autocomplete="off" placeholder="Entrez pathologie 1"/><datalist id="pathologie"><option></option>';
 		genereListboxPathologie($bd);
-		echo '</datalist><span id="pathoSaisieChamp">Saisir une pathologie valide</span></br></br>';
+		echo '</datalist></br></br>';
 		
 	$i=2;
 	while($i<6){
-		echo '<input id="papa" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Entrez pathologie '.$i.'"/><span id="pathoSaisieChamp">Saisir une pathologie valide</span><datalist id="pathologie'.$i.'"><option></option>';
+		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Entrez pathologie '.$i.'"/><datalist id="pathologie'.$i.'"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		$i++;
@@ -260,7 +260,7 @@ function afficheTraitementsSelonSelection($bd, $selection)
         $req->bindValue(':selection',$selection);
         $req->execute();
     
-        echo '<table>' . "\n";
+        echo '<table id="tableauTraitement">' . "\n";
         $res = $req->fetch(PDO::FETCH_ASSOC);
 
         //Il y a au moins une ligne
@@ -268,8 +268,7 @@ function afficheTraitementsSelonSelection($bd, $selection)
         {
             //On affiche les en-têtes
             echo '<tr>'."\n";
-            foreach($res as $c => $v)
-                echo '<th>' . $c . '</th>';
+                echo '<th>Id du traitement</th><th>Nom du traitement</th><th>Description</th><th>Modalité</th><th>Image</th></bold>';
         
             //On affiche la première ligne    
             echo '<tr>'."\n";
@@ -305,7 +304,7 @@ function afficheTraitementsSelonSelection($bd, $selection)
         $req->bindValue(':nom',$nom);
         $req->execute();
     
-        echo '<table>' . "\n";
+        echo '<table id="tableauPathologie">' . "\n";
         $res = $req->fetch(PDO::FETCH_ASSOC);
 
         //Il y a au moins une ligne
@@ -313,8 +312,7 @@ function afficheTraitementsSelonSelection($bd, $selection)
         {
             //On affiche les en-têtes
             echo '<tr>'."\n";
-            foreach($res as $c => $v)
-                echo '<th>' . $c . '</th>';
+                echo '<th>Pathologies associées : </th>';
         
             //On affiche la première ligne    
             echo '<tr>'."\n";

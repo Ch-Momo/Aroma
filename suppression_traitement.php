@@ -1,18 +1,45 @@
-<!doctype html>
-<html lang="fr">
-<head>
-  <meta charset="utf-8">
-  <title>Suppression d'un traitement</title>
-  <!-- <link rel="stylesheet" href="style.css"> -->
-</head>
-<body>
+	<?php 
+		require('connexion.php');
+		require('fonctionsUsman.php');
+		session_start();
 
-<?php 
-	require('connexion.php');
-	//require('entete.php');
-	require('fonctionsUsman.php');
+	?>
+	
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<title>Aroma - Suppression d'un traitement</title>
+		<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+		<meta name="description" content="" />
+		<meta name="keywords" content="" />
+		
+		<!-- Latest compiled and minified CSS -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 
-?>
+		<!-- Optional theme -->
+		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+
+		<!-- Latest compiled and minified JavaScript -->
+		<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.dropotron.min.js"></script>
+		<script src="js/skel.min.js"></script>
+		<script src="js/skel-layers.min.js"></script>
+		<script src="js/init.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/creation_traitement.css" title="style" />
+		<noscript>
+		<link rel="stylesheet" href="css/skel.css" />
+		<link rel="stylesheet" href="css/style.css" />
+		</noscript>
+		
+		<script src="js/creation_traitement.js"></script>
+		
+	</head>
+	
+<body class="homepage">
+		<?php
+			require("menu.php");
+		?>
 
 <?php
 
@@ -29,35 +56,35 @@ $choixTrait = $_POST['choixTrait'];
   $choixTrait='ererer';
   }
 ?>
+<div id="main" class="wrapper style1">
 
-<form action="suppression_traitement.php?choixTrait=<?php echo $choixTrait;?>" method="post">
-<h2>Suppression d'un traitement : </h2>
-</br>
-<p><label> Traitement :</label> <input list="choixTrait" name="choixTrait" />
-    <datalist id="choixTrait">
-        <option></option><?php genereListboxTraitement($bd); ?>
-    </datalist>
-</p>
-<p> <input type="submit" value="Choisir" /> </p>
-</form>
+	<form action="suppression_traitement.php?choixTrait=<?php echo $choixTrait;?>" method="post">
+		<h2>Suppression d'un traitement : </h2>
+		</br>
+		<p><label> Traitement :</label> <input list="choixTrait" name="choixTrait" />
+				<datalist id="choixTrait">
+					<option></option><?php genereListboxTraitement($bd); ?>
+				</datalist>
+		</p>
+		<p> <input type="submit" value="Choisir" /> </p>
+	</form>
 
 
-<?php 
-    if(isset($_POST['choixTrait']) && traitementExiste($bd,$_POST['choixTrait']))
-    {
-	afficheTraitementsSelonSelection($bd, $_POST['choixTrait']);
-	
-	echo '</br><p>Ce traitement est associé aux pathologies suivantes : </p></br>';
-	
-	affichePathologiesSelonSelection($bd, $_POST['choixTrait']);
-	
-?>
+	<?php 
+		if(isset($_POST['choixTrait']) && traitementExiste($bd,$_POST['choixTrait']))
+		{
+		afficheTraitementsSelonSelection($bd, $_POST['choixTrait']);
+			
+		affichePathologiesSelonSelection($bd, $_POST['choixTrait']);
+		
+	?>
 
-<form action="suppression_traitement.php" method="post">
-<p> Voulez-vous vraiment supprimer le traitement <?php echo $_POST['choixTrait'] . ' '; ?> ?
-<input type="hidden" name="choixTrait" value="<?php echo $_POST['choixTrait'];?>"/></p>
-<p><input type="submit" value="oui" name="suppression"/><input type="submit" value="non" name="suppression"/></p>
-</form>
+	<form action="suppression_traitement.php" method="post">
+		<p> Voulez-vous vraiment supprimer le traitement <?php echo $_POST['choixTrait'] . ' '; ?> ?
+			<input type="hidden" name="choixTrait" value="<?php echo $_POST['choixTrait'];?>"/></p>
+		<p><input type="submit" value="oui" name="suppression"/><input type="submit" value="non" name="suppression"/></p>
+	</form>
+</div>
 
 <?php
     }
@@ -108,3 +135,4 @@ $choixTrait = $_POST['choixTrait'];
 <?php// require("fin.php"); ?>
 
 </body>
+</html>
