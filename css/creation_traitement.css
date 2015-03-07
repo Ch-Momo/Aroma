@@ -25,6 +25,12 @@
   display: none;
 }
 
+#supp{
+		color: white;
+	font-weight: bold;
+	background-color: #0A4F31;
+}
+
 
 input:focus{
     background-color:#BDE680;
@@ -33,6 +39,15 @@ textarea{
   resize:none;
 }
 textarea:focus{
+  background-color:#BDE680;
+}
+
+.nom_patho{
+  resize:none;
+  text-align: center;
+  background: none;
+}
+.nom_patho:focus{
   background-color:#BDE680;
 }
 
