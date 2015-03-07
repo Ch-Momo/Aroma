@@ -26,6 +26,7 @@
 		<script src="js/skel.min.js"></script>
 		<script src="js/skel-layers.min.js"></script>
 		<script src="js/init.js"></script>
+		<script src="js/bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/creation_traitement.css" title="style" />
 		<noscript>
 		<link rel="stylesheet" href="css/skel.css" />
@@ -61,10 +62,10 @@ $choixTrait = $_POST['choixTrait'];
 	<form action="suppression_traitement.php?choixTrait=<?php echo $choixTrait;?>" method="post">
 		<h2>Suppression d'un traitement : </h2>
 		</br>
-		<p><label> Traitement :</label> <input list="choixTrait" name="choixTrait" />
-				<datalist id="choixTrait">
+		<p><label> Traitement :</label>
+				<select id="choixTrait" name = "choixTrait">
 					<option></option><?php genereListboxTraitement($bd); ?>
-				</datalist>
+				</select>
 		</p>
 		<p> <input type="submit" value="Choisir" /> </p>
 	</form>
@@ -80,11 +81,10 @@ $choixTrait = $_POST['choixTrait'];
 	?>
 
 	<form action="suppression_traitement.php" method="post">
-		<p> Voulez-vous vraiment supprimer le traitement <?php echo $_POST['choixTrait'] . ' '; ?> ?
 			<input type="hidden" name="choixTrait" value="<?php echo $_POST['choixTrait'];?>"/></p>
-		<p><input type="submit" value="oui" name="suppression"/><input type="submit" value="non" name="suppression"/></p>
+		<p><input id="supp" type="submit" value="Supprimer" name="suppression"/></p></br>
 	</form>
-</div>
+
 
 <?php
     }
@@ -99,14 +99,18 @@ $choixTrait = $_POST['choixTrait'];
 
     //Suppression d'un traitement ?
     $paramPost = array('suppression','choixTrait');
-    if(testCles($paramPost,$_POST) && $_POST['suppression']=='oui')
+    if(testCles($paramPost,$_POST) && $_POST['suppression']=='Supprimer')
     {
         //On teste si le traitement existe
         if(traitementExiste($bd,$choixTrait))
 			
-        {	echo '<p>Le traitement a bien été supprimé. Par conséquent, il n\'existe plus.</p>';
-
-		    echo '<p> Retourner à la <a href="suppression_traitement.php">liste des traitements ?</a>';
+        {	
+			echo '<script type="text/javascript">';
+			
+			echo "alert('Le traitement a bien été supprimé');";
+			
+			echo '</script>';
+			
 	
             //On prend d'abord l id de traitement 	
 			$idtraitement = recupererIdtraitement($bd, $choixTrait);
@@ -131,8 +135,11 @@ $choixTrait = $_POST['choixTrait'];
     }
 
 ?>
-
-<?php// require("fin.php"); ?>
+</div>
+		<!-- Le Footer -->
+			<div id="footer">
+				
+			</div>
 
 </body>
 </html>

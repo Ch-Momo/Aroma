@@ -50,7 +50,7 @@ creationEtTestFormulaire($bd);
 
 <h2> Création d'un traitement </h2>
 </br>
-<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post">
+<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">
 		<p><label> Nom du traitement : *<span id="Ok" class="vide">Valide</span></label>
 		<input type="text" name="nom" id="nom" autocomplete="off" autofocus required placeholder="Entrez le nom du traitement"/></p>
 		<p><label class="nom_patho"> Pathologie : *<span id="pathoSaisieChamp">Saisir une pathologie valide</span></label><p> 
@@ -67,7 +67,7 @@ creationEtTestFormulaire($bd);
 			</select>
 		</p>
 		<p> Sélectionnez une image :<input type="file" name="image"/>  </p>	
-		<p> <input type="submit" value="Créer un traitement" name="conf" id="confirmer" /></p>
+		<p> <input type="submit" value="Créer un traitement" name="conf" id="confirmer" /></p></br>
 </form>
 
 </div>
@@ -77,6 +77,7 @@ creationEtTestFormulaire($bd);
 			<div id="footer">
 				
 			</div>
-</body>
-
-<? //php require("fin.php"); ?>
+			
+			
+	</body>
+</html>

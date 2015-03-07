@@ -26,13 +26,14 @@
 		<script src="js/skel.min.js"></script>
 		<script src="js/skel-layers.min.js"></script>
 		<script src="js/init.js"></script>
+		<script src="bootstrap.min.js"></script>
 		<link rel="stylesheet" type="text/css" href="css/creation_traitement.css" title="style" />
 		<noscript>
 		<link rel="stylesheet" href="css/skel.css" />
 		<link rel="stylesheet" href="css/style.css" />
 		</noscript>
 		
-		<script src="js/creation_traitement.js"></script>
+		<script src="js/modifier_traitement.js"></script>
 		
 	</head>
 
@@ -60,15 +61,15 @@
 		<form action="modifier_traitement.php?choixTrait=<?php echo $choixTrait;?>" method="post">
 			<h2>Modification d'un traitement : </h2>
 			</br>
-				<p><label> Traitement :</label> <input list="choixTrait" name="choixTrait" />
-					<datalist id="choixTrait">
+				<p><label> Traitement :</label>
+					<select id="choixTrait" name="choixTrait">
 						<option></option><?php genereListboxTraitement($bd); ?>
-					</datalist>
+					</select>
 				</p>
 			<p> <input type="submit" value="Choisir" /> </p>
 		</form>
-	</div>
-		<div id="main" class="wrapper style1">
+
+
 		<div id="formTemp">
 	<?php 
 
@@ -77,18 +78,17 @@
 		if(isset($_POST['choixTrait']) && traitementExiste($bd,$_POST['choixTrait']))
 		{
 		afficheTraitementsSelonSelection($bd, $_POST['choixTrait']);
-			   $idtraitement = recupererIdtraitement($bd, $choixTrait);
+		affichePathologiesSelonSelection($bd, $_POST['choixTrait']);
+		 $idtraitement = recupererIdtraitement($bd, $choixTrait);
 		$pathoAmodif = recupererNomPathologie($bd, $choixTrait);
 	
 	?>	</div>
-		</div>
-				<div id="main" class="wrapper style1">
+
 		<form action="modifier_traitement.php?id-traitement=<?php echo $idtraitement['id_traitement']; ?>&pathoAmodif=<?php if(empty($pathoAmodif['0'])){echo "";} else { echo $pathoAmodif['0'];} ?>&pathoAmodif2=<?php if(empty($pathoAmodif['1'])){echo "";} else { echo $pathoAmodif['1'];} ?>&pathoAmodif3=<?php if(empty($pathoAmodif['2'])){echo "";} else { echo $pathoAmodif['2'];} ?>&pathoAmodif4=<?php if(empty($pathoAmodif['3'])){echo "";} else { echo $pathoAmodif['3'];} ?>&pathoAmodif5=<?php if(empty($pathoAmodif['4'])){echo "";} else { echo $pathoAmodif['4'];} ?>" method="post">
-			<p> Voulez-vous modifier ce traitement ? <?php echo $_POST['choixTrait'] . ' '; ?> ?
 				<input type="hidden" name="choixTrait" value="<?php echo $_POST['choixTrait'];?>"/></p>
-			<p><input type="submit" value="oui" name="confModif"/><input type="submit" value="non" name="confModif"/></p>
+			<p><input id = "supp" type="submit" value="Modifier" name="confModif"/></p>
 		</form>
-	</div>
+
 	<?php
 		}
 		else
@@ -103,7 +103,7 @@
 
 		//Modification d'un traitement ?
 		$paramPost = array('confModif','choixTrait');
-		if(testCles($paramPost,$_POST) && $_POST['confModif']=='oui')
+		if(testCles($paramPost,$_POST) && $_POST['confModif']=='Modifier')
 		{	
 		//on récupère les infos de la BDD pour pré-remplir le formulaire de modif.
 		$req=$bd->prepare('SELECT * from traitements where nom_traitement=:choixTrait');
@@ -114,15 +114,16 @@
 			$nom=$tab['nom_traitement'];
 			$desc=$tab['Desc_traitement'];		
 			$mod=$tab['id_modalite'];
+			$image=$tab["image"];
 			
 	$patho = recupererNomPathologie($bd, $choixTrait);
-	   
+   
 	?>
 			
 
-	<div id="main" class="wrapper style1">
-			<form action="modifier_traitement.php?id-traitement=<?php echo $_GET['id-traitement']; ?>&pathoAmodif=<?php if(empty($_GET['pathoAmodif'])){echo "";} else { echo $_GET['pathoAmodif'];} ?>&pathoAmodif2=<?php if(empty($_GET['pathoAmodif2'])){echo "";} else { echo $_GET['pathoAmodif2'];} ?>&pathoAmodif3=<?php if(empty($_GET['pathoAmodif3'])){echo "";} else { echo $_GET['pathoAmodif3'];} ?>&pathoAmodif4=<?php if(empty($_GET['pathoAmodif4'])){echo "";} else { echo $_GET['pathoAmodif4'];} ?>&pathoAmodif5=<?php if(empty($_GET['pathoAmodif5'])){echo "";} else { echo $_GET['pathoAmodif5'];} ?>" method="post">
-					<p><label> Nom du traitement : *</label> <input type="text" name="nom" value="<?php echo $nom; ?>"/></p>
+
+			<form action="modifier_traitement.php?id-traitement=<?php echo $_GET['id-traitement']; ?>&pathoAmodif=<?php if(empty($_GET['pathoAmodif'])){echo "";} else { echo $_GET['pathoAmodif'];} ?>&pathoAmodif2=<?php if(empty($_GET['pathoAmodif2'])){echo "";} else { echo $_GET['pathoAmodif2'];} ?>&pathoAmodif3=<?php if(empty($_GET['pathoAmodif3'])){echo "";} else { echo $_GET['pathoAmodif3'];} ?>&pathoAmodif4=<?php if(empty($_GET['pathoAmodif4'])){echo "";} else { echo $_GET['pathoAmodif4'];} ?>&pathoAmodif5=<?php if(empty($_GET['pathoAmodif5'])){echo "";} else { echo $_GET['pathoAmodif5'];} ?>" method="post" enctype="multipart/form-data">
+					<p><label> Nom du traitement : *</label> <input type="text" name="nom" autofocus required value="<?php echo $nom; ?>"/></p>
 					<p><label> Pathologies : *</label><p> 
 					 <input list="pathologie" name="pathologie" value="<?php if(empty($patho['0'])){echo "";} else { echo $patho['0'];} ?>"/>
 						<datalist id="pathologie">
@@ -159,7 +160,9 @@
 				</select>
 				</p>
 				</br>
-				<p> <input type="submit" name="modifier" value="Valider"/> </p>
+					<p> <br/><label>Image actuelle :</label></p><img src="images_huiles/<?php echo $image; ?>" alt="image" width="400" height="300" id="img_huile" />
+	<p> <br/> Sélectionnez une image si vous voulez modifier l'image existante :<br/><br/><input type="file" name="image" />  </p> 
+				<p> <input type="submit" name="modifier" value="Valider"/> </p></br>
 		</form>
 	</div>
 	   <?php } ?>
@@ -193,7 +196,41 @@
 				
 			$idtraitement = recupererIdtraitement($bd, $_POST['nom']);
 			
-			 miseAjourTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['modalite'], $_GET['id-traitement']);
+			
+			
+			
+			
+							$dossier = 'images_huiles/';
+				$fichier = basename($_FILES['image']['name']);
+				$taille_maxi = 10000000;
+				$taille = filesize($_FILES['image']['tmp_name']);
+				$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+				$extension = strrchr($_FILES['image']['name'], '.');
+		
+		
+		
+			//Début des vérifications de sécurité...
+
+		
+		     $fichier = strtr($fichier, 
+		          'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 
+		          'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
+		     $fichier = preg_replace('/([^.a-z0-9]+)/i', '-', $fichier);
+		     if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
+		     {
+		          $_POST['image']=$fichier;
+		     }
+		     else //Sinon (la fonction renvoie FALSE).
+		     {
+					echo  "<b>Le fichier n'a pas été correctement chargé</b>";
+		     }
+			
+			
+			
+			
+			
+			
+			 miseAjourTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['modalite'], $_GET['id-traitement'], $_POST['image']);
 					
 			if(!empty($_POST['pathologie'])){
 					
@@ -229,5 +266,9 @@
 		}
 
 	?>
+			<!-- Le Footer -->
+			<div id="footer">
+				
+			</div>
 	</body>
 </html>

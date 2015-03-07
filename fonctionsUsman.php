@@ -18,15 +18,14 @@ function creerChampsPathologies($bd){
 
 
 function creationEtTestFormulaire($bd){
-	
-
 
 	if (!empty($_POST))
 	{
 	 if(isset($_POST['conf']))
 	 {
 
-		if((trim($_POST['pathologie'])=='' || trim($_POST['pathologie2'])=='' || trim($_POST['pathologie3'])=='' || trim($_POST['pathologie4'])=='' || trim($_POST['pathologie5'])=='')){
+		if((trim($_POST['pathologie'])=='' || trim($_POST['pathologie2'])=='' || trim($_POST['pathologie3'])=='' || trim($_POST['pathologie4'])=='' || trim($_POST['pathologie5'])==''))
+		{
 			
 			echo "<b>Veuillez choisir 5 pathologies ! !</b>"; 
 		
@@ -37,60 +36,105 @@ function creationEtTestFormulaire($bd){
 		if($_POST['modalite']=='0')
 			
 			echo  "<b>Veuiller choisir 3 modalités !</b>";
-		}
-
-		else
+		
+		if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
 		{
-		//Si le traitement existe déjà, renvoie message d'erreur
-			if(traitementExiste($bd, $_POST['nom']))
+		    echo  "<b>Ce format de fichier n'est pas pris en charge</b>";
+		}
+		
+		if($taille>$taille_maxi)
+		{
+			echo  "<b>Fichier trop volumineux</b>";
+		}
+		}
+		else
 			{
-				
-				 echo '<p>Ce traitement existe déjà !</p>'; 
-			}
-			
-		//Sinon on crée le traitement
-			else
-			{
-			   
-			creerTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['modalite']);
-			
-			$idtraitement = recupererIdtraitement($bd, $_POST['nom']);
-
-			ajouterPathologie($bd, $_POST['pathologie'], $idtraitement);
-
-			echo '<p>Traitement ajouté avec succès</p> </section>';
-			
-
-			if(!empty($_POST['pathologie2'])){
-				
-			ajouterPathologie($bd, $_POST['pathologie2'], $idtraitement);
-			
-			}
+			//Si le traitement existe déjà, renvoie message d'erreur
+				if(traitementExiste($bd, $_POST['nom']))
+				{
 					
-			if(!empty($_POST['pathologie3'])){
+				echo '<script type="text/javascript">';
+				
+				echo "alert('Ce traitement existe déjà !');";
+				
+				echo '</script>';
+				}
+				
+			//Sinon on crée le traitement
+				else
+				{
+				
+					$dossier = 'images_huiles/';
+					$fichier = basename($_FILES['image']['name']);
+					$taille_maxi = 10000000;
+					$taille = filesize($_FILES['image']['tmp_name']);
+					$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+					$extension = strrchr($_FILES['image']['name'], '.');
+			
+			
+					
+					//Début des vérifications de sécurité...
+
+				
+					 $fichier = strtr($fichier, 
+						  'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 
+						  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
+					 $fichier = preg_replace('/([^.a-z0-9]+)/i', '-', $fichier);
+					 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
+					 {
+						  $_POST['image']=$fichier;
+					 }
+					 else //Sinon (la fonction renvoie FALSE).
+					 {
+							echo  "<b>Le fichier n'a pas été correctement chargé</b>";
+					 }
+					   
+					   
+					   
+					creerTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['modalite'], $_POST['image']);
+					
+					$idtraitement = recupererIdtraitement($bd, $_POST['nom']);
+
+					ajouterPathologie($bd, $_POST['pathologie'], $idtraitement);
+
+					echo '<script type="text/javascript">';
+					
+					echo "alert('Le traitement a bien été ajouté                      Appuyez sur Ok pour continuer');";
+					
+					echo '</script>';
+					
+
+					if(!empty($_POST['pathologie2'])){
 						
-			ajouterPathologie($bd, $_POST['pathologie3'], $idtraitement);
-
-			}
+					ajouterPathologie($bd, $_POST['pathologie2'], $idtraitement);
 					
-			if(!empty($_POST['pathologie4'])){
-				
-			ajouterPathologie($bd, $_POST['pathologie4'], $idtraitement);
-			
-			}
-				
-			if(!empty($_POST['pathologie5'])){				
-				
-			ajouterPathologie($bd, $_POST['pathologie5'], $idtraitement);
+					}
+							
+					if(!empty($_POST['pathologie3'])){
+								
+					ajouterPathologie($bd, $_POST['pathologie3'], $idtraitement);
 
-		}	
+					}
+							
+					if(!empty($_POST['pathologie4'])){
+						
+					ajouterPathologie($bd, $_POST['pathologie4'], $idtraitement);
+					
+					}
+						
+					if(!empty($_POST['pathologie5'])){				
+						
+					ajouterPathologie($bd, $_POST['pathologie5'], $idtraitement);
+
+					}
+				
+				}
+		
 		}
 	}
   }
 }
 
-
-}
 
 function afficheTraitements($bd)
 {
@@ -161,7 +205,7 @@ function traitementExiste($bd, $nom)
 	}
  	catch(PDOException $e)
     {
-        	die('ERREUR : ' . $e->getMessage());
+       	die('ERREUR : ' . $e->getMessage());
     }
 	
 }
@@ -500,10 +544,10 @@ function ajouterPathologieM($bd, $pathologie, $idtraitement){
 }
 
 
-function creerTraitement($bd, $nom, $decription, $modalite){
+function creerTraitement($bd, $nom, $decription, $modalite, $image){
 
 
- $sql = 'INSERT INTO traitements (nom_traitement, Desc_traitement, id_modalite) VALUES (:nom, :description, :modalite)';
+ $sql = 'INSERT INTO traitements (nom_traitement, Desc_traitement, id_modalite, image) VALUES (:nom, :description, :modalite, :image)';
 			
 	    try
         {
@@ -511,6 +555,7 @@ function creerTraitement($bd, $nom, $decription, $modalite){
                 $req->bindValue(':nom',htmlentities($nom));
                 $req->bindValue(':description',htmlentities($decription));
 				$req->bindValue(':modalite',htmlentities($modalite));
+				$req->bindValue(':image',htmlentities($image));
                 $req->execute();
 				
         }
@@ -646,20 +691,27 @@ function miseAjourPathologies($bd, $pathologie, $nom, $anciennePatho){
 }
 
 
-function miseAjourTraitement($bd, $nom, $description, $modalite, $idtraitement){
+function miseAjourTraitement($bd, $nom, $description, $modalite, $idtraitement, $img){
 
-  $sql = 'UPDATE traitements SET nom_traitement=:nom, Desc_traitement=:description, id_modalite=:modalite WHERE id_traitement=:idtraitement';
+  $sql = 'UPDATE traitements SET nom_traitement=:nom, Desc_traitement=:description, id_modalite=:modalite, image=:img WHERE id_traitement=:idtraitement';
 			
 	  try
           {
+			  
                 $req = $bd->prepare($sql);
                 $req->bindValue(':nom',htmlentities($nom));
                 $req->bindValue(':description',htmlentities($description));
 				$req->bindValue(':modalite',htmlentities($modalite));
 				$req->bindValue(':idtraitement',htmlentities($idtraitement));
+				$req->bindValue(':img',htmlentities($img));
                 $req->execute();
 				
-				echo '<p>MAJ effectué avec succès !</p>'; 
+				
+			echo '<script type="text/javascript">';
+			
+			echo "alert('La traitement a été mise à jour avec succès !');";
+			
+			echo '</script>';
           }
             catch(PDOException $e)
             {
