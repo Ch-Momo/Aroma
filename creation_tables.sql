@@ -10,8 +10,9 @@ CREATE TABLE huiles(
 	origine_geo TEXT NOT NULL,
 	conseils TEXT,
 	indications TEXT,
-	message_energetique TEXT,
+	message_energitique TEXT,
 	image TINYTEXT,
+	video TINYTEXT,
 	PRIMARY KEY (id_huile),
 	UNIQUE KEY(nom_huile),
 	FOREIGN KEY (id_famille) REFERENCES familles(id_famille)
@@ -137,6 +138,7 @@ CREATE TABLE traitements(
 	Desc_traitement TEXT NOT NULL,
 	id_modalite MEDIUMINT NOT NULL,
 	image TINYTEXT,
+	video TINYTEXT,
 	PRIMARY KEY (id_traitement),
 	UNIQUE KEY(nom_traitement),
 	FOREIGN KEY (id_modalite) REFERENCES modalites(id_modalite)
@@ -172,16 +174,3 @@ CREATE TABLE traitements_pathologies(
 	FOREIGN KEY (id_pathologie) REFERENCES pathologies(id_pathologie)
 	);
 
-/*
-	Données des administrateurs-modérateurs.
-*/
-CREATE TABLE administrateurs_modérateurs(
-	id MEDIUMINT NOT NULL AUTO_INCREMENT,
-	nom VARCHAR(100) NOT NULL,
-	prenom VARCHAR(100) NOT NULL,
-	password VARCHAR(255) NOT NULL,
-	naissance DATE,
-	pays VARCHAR(20),
-	adresse_electronique VARCHAR(100) NOT NULL,
-	PRIMARY KEY (id)
-	);
