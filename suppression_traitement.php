@@ -62,12 +62,13 @@ $choixTrait = $_POST['choixTrait'];
 	<form action="suppression_traitement.php?choixTrait=<?php echo $choixTrait;?>" method="post">
 		<h2>Suppression d'un traitement : </h2>
 		</br>
-		<p><label> Traitement :</label>
+		<p><label> Choisissez le traitement à modifier :</label>
 				<select id="choixTrait" name = "choixTrait">
 					<option></option><?php genereListboxTraitement($bd); ?>
 				</select>
 		</p>
 		<p> <input type="submit" value="Choisir" /> </p>
+		
 	</form>
 
 
@@ -92,7 +93,7 @@ $choixTrait = $_POST['choixTrait'];
     {
 ?>
 
-    <p>Veuillez choisir un traitement </p>.
+    
 <?php } ?>
 
 <?php

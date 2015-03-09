@@ -2,13 +2,13 @@
 
 function creerChampsPathologies($bd){
 	
-		echo '<input class="nom_patho" list="pathologie" name="pathologie" required autocomplete="off" placeholder="Entrez pathologie 1"/><datalist id="pathologie"><option></option>';
+		echo '<input class="nom_patho" list="pathologie" name="pathologie" required autocomplete="off" placeholder="Double cliquez pour choisir..."/><datalist id="pathologie"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		
 	$i=2;
 	while($i<6){
-		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Entrez pathologie '.$i.'"/><datalist id="pathologie'.$i.'"><option></option>';
+		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Double cliquez pour choisir..."/><datalist id="pathologie'.$i.'"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		$i++;

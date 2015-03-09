@@ -255,8 +255,3 @@ input[type="submit"]
   display: none;
 }
 
-#pathoSaisieChamp{
-  color: red;
-  margin-left: 1em;
-  display: none;
-}

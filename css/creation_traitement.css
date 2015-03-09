@@ -84,3 +84,9 @@ textarea:focus{
 	font-weight: bold;
     text-align: center;
 }
+
+form
+{
+  margin-bottom: 50px;
+
+}
