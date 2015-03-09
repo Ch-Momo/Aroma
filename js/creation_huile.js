@@ -252,7 +252,7 @@ $(document).ready(function()
 
 	$(document).keydown(function(event) {
 		if ( (event.keyCode == 76) && (event.shiftKey))  {
-			alert('CONNEXIONN');
+			$(location).attr('href',"page_connexion.php");
 		}
 	});
 

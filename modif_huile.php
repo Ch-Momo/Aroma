@@ -67,13 +67,27 @@
 					$formValide=verification_formulaire_creation_huile($bd,$_POST);
 					if($formValide==true){
 							if(isset($_SESSION['nom_huile_modifiee'])){
-								if($_SESSION['nom_huile_modifiee']!=$_POST['nom'])
-									suppr_huile($bd,$_SESSION['nom_huile_modifiee']);
-								else
-									suppr_huile($bd,$_POST['nom']);
+								if($_SESSION['nom_huile_modifiee']!=$_POST['nom']){
+									if(isset($_POST['image_existe'])){
+										suppr_huile_modif($bd,$_SESSION['nom_huile_modifiee']);
+									}
+									else{
+										suppr_huile($bd,$_SESSION['nom_huile_modifiee']);
+									}
+								}
+								else{
+
+									if(isset($_POST['image_existe'])){
+										suppr_huile_modif($bd,$_POST['nom']);
+									}
+									else{
+										suppr_huile($bd,$_POST['nom']);
+									}
+								}
 							}
+
 							creation_huile($bd,$_POST);
-							echo '<div class="alert alert-success" role="alert"><p> <strong> L\'huile a bien été modifiée. </strong></p></div>';
+							echo '<div id="res"><div class="alert alert-success" role="alert"><p> <strong> L\'huile a bien été modifiée. </strong></p></div></div>';
 							$modifiee=true;
 					}
 				}

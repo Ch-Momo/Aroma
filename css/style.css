@@ -487,10 +487,8 @@
 /* Header */
 
 	#header {
-		padding-top:10px;
 		background-size: cover;
 		color: #fff;
-		padding: 6em 0;
 		text-align: center;
 		background-position: 0% 65%;
 		position: relative;
@@ -544,7 +542,7 @@
 
 			#nav > ul > li.active {
 				margin-left: 28px;
-				background:#BDE680;
+				background:rgba(179,179,179,0.2);
 			}
 
 				#nav > ul > li.active a {
@@ -559,8 +557,7 @@
 
 	.dropotron {
 		margin-top: -2px;
-		background:#BDE680;
-		color: #0A4F31;
+		background:rgba(179,179,179,0.2);
 		min-width: 12em;
 		padding: 1em 0;
 		
@@ -624,9 +621,8 @@
 		width:1000px;
 		margin-left: auto;
   		margin-right: auto;
-  		background-color: #EFF0EB;
-  		border:3px solid red;
-  		border-color:#BDE680;
+  		background:rgba(235,245,244,0.7);
+		box-shadow: 1px 1px 12px #555;
 	}
 
 		#main .sidebar .major {
