@@ -135,11 +135,9 @@ CREATE TABLE traitements(
 	id_traitement MEDIUMINT NOT NULL AUTO_INCREMENT,
 	nom_traitement VARCHAR(100) NOT NULL,
 	Desc_traitement TEXT NOT NULL,
-	id_modalite MEDIUMINT NOT NULL,
 	image TINYTEXT,
 	PRIMARY KEY (id_traitement),
-	UNIQUE KEY(nom_traitement),
-	FOREIGN KEY (id_modalite) REFERENCES modalites(id_modalite)
+	UNIQUE KEY(nom_traitement)
 	);
 /*
 	La table de pathologies.
@@ -172,6 +170,12 @@ CREATE TABLE traitements_pathologies(
 	FOREIGN KEY (id_pathologie) REFERENCES pathologies(id_pathologie)
 	);
 
+CREATE TABLE traitements_modalites(
+	id_traitement MEDIUMINT NOT NULL,
+	id_modalite MEDIUMINT NOT NULL,
+	FOREIGN KEY (id_traitement) REFERENCES traitements(id_traitement),
+	FOREIGN KEY (id_modalite) REFERENCES modalites(id_modalite)
+	);
 /*
 	Données des administrateurs-modérateurs.
 */
