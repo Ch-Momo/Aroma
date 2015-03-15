@@ -931,7 +931,7 @@ function suppr_huile_modif($bd,$nom_huile){
 function moderateur_existe($bd,$pseudo,$pass){
 	try{
 
-		$req=$bd->prepare('Select distinct * From administrateurs_modérateurs where nom=:pseudo');
+		$req=$bd->prepare('Select distinct * From administrateurs_moderateurs where nom=:pseudo');
 		$req->bindValue(':pseudo',$pseudo);
 		$req->execute();
 		$i=0;
@@ -957,6 +957,8 @@ function ajouterHuiles($bd){
 	$sheet = $objPHPExcel->getSheet(0);			 
 	$nbLignes=0;
 	$tab=array();
+	$huilesSucces=0;
+	$huilesEchec=0;
 	// On boucle sur les lignes
 	foreach($sheet->getRowIterator() as $row) {
 		if($nbLignes!=0){
@@ -1045,27 +1047,44 @@ function ajouterHuiles($bd){
 				    	$tab['indications']=$cell->getValue();
 				    }
 				    else if ($nbColonnes==27){
-				    	$tab['mode_emploi']=$cell->getValue();
+				    	$tab['modeEmploi']=$cell->getValue();
 				    }
-				    else if ($nbColonnes==28){
-				    	$tab['image']=$cell->getValue();
+				    
+				    else if ($nbColonnes==29){
+				    	$tab['message_energetique']=$cell->getValue();
+				    }
+				    else if ($nbColonnes==30){
+				    	$tab['image_extension']=$cell->getValue();
 				    }
 			
 				 $nbColonnes++;   
 			    
 			   }
-
-		print_r($tab);  	
-		echo '<br/><br/>';						 
-		}
-		
+ 
 		// Creation de l'huile
-		//$formValide=verification_formulaire_creation_huile_fichier($bd,$tab);
+		$formValide=verification_formulaire_creation_huile_fichier($bd,$tab);
+		if($formValide==true){
+			if(huile_existe($bd,$tab['nom'])){
+				$formValide=false;
+				$huilesEchec++;
+			}
+			else{
+				creation_huile($bd,$tab);
+				$huilesSucces++;
+			}
+		}
+		else{
+			$huilesEchec++;
+		}				 
+		
 
+		}
 		$nbLignes++;
 		}
-	echo $nbLignes;    
-				    
+		$res=array();
+		$res[0]=$huilesSucces;
+		$res[1]=$huilesEchec;
+		return $res;  
 								
 }
 
@@ -1086,6 +1105,7 @@ function verification_formulaire_creation_huile_fichier($bd,&$tab){
 		$formValide=false;
 		$err_nom=true;
 	}
+
 	/*	
 		Vérifier que les constituants ne sont pas des chaines vides et qu'ils sont distincts
 	*/
@@ -1100,6 +1120,7 @@ function verification_formulaire_creation_huile_fichier($bd,&$tab){
 		$formValide=false;
 		$err_pourc=true;
 	}
+
 	/*	
 		Vérifier que les propriétés ne sont pas des chaines vides et qu'ils sont distincts
 	*/
@@ -1107,6 +1128,7 @@ function verification_formulaire_creation_huile_fichier($bd,&$tab){
 		$formValide=false;
 		$err_prop=true;
 	}
+
 	/*
 		Vérifier les notations.
 	*/	
@@ -1114,6 +1136,7 @@ function verification_formulaire_creation_huile_fichier($bd,&$tab){
 		$formValide=false;
 		$err_notation=true;
 	}
+
 	/*
 		Vérifier les conseils et les indications
 	*/
@@ -1121,21 +1144,48 @@ function verification_formulaire_creation_huile_fichier($bd,&$tab){
 		$formValide=false;
 		$err_conseils=true;
 	}
+	/*
+		Modes d'emploi.
+	*/
+	$chaine=$tab['modeEmploi'];
+	$modeEmploi=array();
+	$i=0;
+	if(strpos($chaine,'Voie orale')>-1){
+		$modeEmploi[$i]='Voie orale';
+		$i++;
+	}
 
+	if(strpos($chaine,'Voie cutanée')>-1){
+		$modeEmploi[$i]='Voie cutanée';
+		$i++;
+	}
+
+	if(strpos($chaine,'En diffusion')>-1){
+		$modeEmploi[$i]='En diffusion';
+		$i++;
+	}
+	if($i==0){
+		$formValide=False;
+	}
+
+	$tab['modeEmploi']=$modeEmploi;
 	/*
 
 		L'image.
 
 	*/
 	
-	if(trim($tab['image'])=='' or trim($tab['image'])==''){
+	if(trim($tab['image_extension'])=='' or trim($tab['image_extension'])==''){
 		$formValide=false;
 	}
 
 
 	if ($formValide){
-		if(file_exists('fichiers_huiles/'.$tab['image'])){
-			exec('cp fichiers/huiles'.$tab['image'].' /var/www/html/Aroma/avec-Design/images_huiles');
+		if(file_exists('fichiers_huiles/'.$tab['image_extension'])){
+			copy('/var/www/html/Aroma/avec-Design/fichiers_huiles/'.$tab['image_extension'],'/var/www/html/Aroma/avec-Design/images_huiles/'.$tab['image_extension']);
+		}
+		else{
+			$formValide=false;
 		}
 
 	}
@@ -1143,7 +1193,17 @@ function verification_formulaire_creation_huile_fichier($bd,&$tab){
 
 }
 
-
+function unzip_file($file, $destination) {
+	// Créer l'objet (PHP 5 >= 5.2)
+	$zip = new ZipArchive() ;
+	// Ouvrir l'archive
+	$zip->open($file);
+	// Extraire le contenu dans le dossier de destination
+	$zip->extractTo($destination);
+	// Fermer l'archive
+	$zip->close();
+	// Afficher un message de fin
+}
 
 
 ?>

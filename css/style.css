@@ -138,11 +138,12 @@
 		-ms-appearance: none;
 		appearance: none;
 		background: none;
-		border: solid 1px #888888;
+		border: solid 1px #AFD680;
 		color: inherit;
 		outline: 0;
 		padding: 1em;
 		text-decoration: none;
+		border-radius:5px;
 		
 	}
 
@@ -150,7 +151,7 @@
 		input[type="password"]:focus,
 		input[type="email"]:focus,
 		textarea:focus {
-			border-color: #3ac984;
+			border-color: #AFD680;
 		}
 
 	input[type="text"],
@@ -621,7 +622,7 @@
 		width:1000px;
 		margin-left: auto;
   		margin-right: auto;
-  		background:rgba(235,245,244,0.7);
+  		background:rgba(175, 214, 128, 0.7);
 		box-shadow: 1px 1px 12px #555;
 	}
 
