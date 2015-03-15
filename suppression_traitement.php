@@ -62,22 +62,27 @@ $choixTrait = $_POST['choixTrait'];
 	<form action="suppression_traitement.php?choixTrait=<?php echo $choixTrait;?>" method="post">
 		<h2>Suppression d'un traitement : </h2>
 		</br>
-		<p><label> Choisissez le traitement à modifier :</label>
+		<p><label> Traitement :</label>
 				<select id="choixTrait" name = "choixTrait">
 					<option></option><?php genereListboxTraitement($bd); ?>
 				</select>
 		</p>
 		<p> <input type="submit" value="Choisir" /> </p>
-		
 	</form>
 
 
 	<?php 
 		if(isset($_POST['choixTrait']) && traitementExiste($bd,$_POST['choixTrait']))
 		{
-		afficheTraitementsSelonSelection($bd, $_POST['choixTrait']);
+			afficheTraitementsSelonSelection($bd, $_POST['choixTrait']);
+				
+			affichePathologiesSelonSelection($bd, $_POST['choixTrait']);
+
+			$idtraitement = recupererIdtraitement($bd, $choixTrait);
 			
-		affichePathologiesSelonSelection($bd, $_POST['choixTrait']);
+			$idtrait = intval($idtraitement['id_traitement']);
+			
+			afficheModalitesSelonSelection($bd, $idtrait);
 		
 	?>
 
@@ -93,7 +98,7 @@ $choixTrait = $_POST['choixTrait'];
     {
 ?>
 
-    
+    <p>Veuillez choisir un traitement </p>.
 <?php } ?>
 
 <?php
@@ -106,11 +111,8 @@ $choixTrait = $_POST['choixTrait'];
         if(traitementExiste($bd,$choixTrait))
 			
         {	
-			echo '<script type="text/javascript">';
-			
-			echo "alert('Le traitement a bien été supprimé');";
-			
-			echo '</script>';
+		
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Le traitement a bien été supprimé.<br/></p>';
 			
 	
             //On prend d'abord l id de traitement 	
@@ -131,6 +133,8 @@ $choixTrait = $_POST['choixTrait'];
 			
             //Enfin on supprime le traitement
             supprimerTraitement($bd, $choixTrait);
+			$idtrait = intval($idtraitement['id_traitement']);
+			supprimerModalite($bd, $idtrait);
 			
         }
     }

@@ -2,19 +2,113 @@
 
 function creerChampsPathologies($bd){
 	
-		echo '<input class="nom_patho" list="pathologie" name="pathologie" required autocomplete="off" placeholder="Double cliquez pour choisir..."/><datalist id="pathologie"><option></option>';
+		echo '<input class="nom_patho" list="pathologie" name="pathologie" required autocomplete="off" placeholder="Entrez pathologie 1" value="';
+		if (isset($_POST['pathologie'])){echo $_POST['pathologie'];}
+			echo '"/><datalist id="pathologie"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		
 	$i=2;
 	while($i<6){
-		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Double cliquez pour choisir..."/><datalist id="pathologie'.$i.'"><option></option>';
+		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" required autocomplete="off" placeholder="Entrez pathologie '.$i.'" value="';
+		if (isset($_POST['pathologie'.$i])){echo $_POST['pathologie'.$i];}
+		echo '" /><datalist id="pathologie'.$i.'"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		$i++;
 	}
 	
 }
+
+function modifierChampsPathologies($bd, $pathoAmodif){
+	
+		echo '<input class="nom_patho" list="pathologie" name="pathologie" required placeholder="Entrez pathologie 1" value="'.$pathoAmodif[0].'"/><datalist id="pathologie"><option></option>';
+		genereListboxPathologie($bd);
+		echo '</datalist></br></br>';
+		
+	$i=2;
+	$j=1;
+	while($i<6 && $j<5){
+		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" required placeholder="Entrez pathologie '.$i.'" value="'.$pathoAmodif[$j].'"/><datalist id="pathologie'.$i.'"><option></option>';
+		genereListboxPathologie($bd);
+		echo '</datalist></br></br>';
+		$i++;
+		$j++;
+	}
+	
+}
+
+
+
+function listboxModalite($bd){
+	try{
+		$req=$bd->prepare('SELECT * FROM modalites;');
+		$req->execute();
+		$i=0;
+		echo '<div class="modal-2">';
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			echo '<div class="checkbox inline">';
+			echo '';
+			echo'<input type="checkbox" name="modalite[]" value="'.$rep['nom_modalite'].'" /> <label>'.$rep['nom_modalite'].'</label>';
+			echo '</div>';
+		}
+		echo '</div>';
+	}catch(PDOException $e){
+		die('Erreur ! '.$e->getMessage().'</body></html>');
+	}
+}
+
+
+
+function listboxModaliteRempli($bd, $tab){
+	try{
+		
+		/*
+			Pour avoir le(s) id de(s) modalite associés au traitement.
+		*/
+		$req=$bd->prepare('select * from traitements_modalites where id_traitement=:id_traitement');
+		$req->bindValue(':id_traitement',$tab);
+		$req->execute();
+		$id_traitement=array();
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			$id_modalite[]=$rep['id_modalite'];
+		}
+		$req=$bd->prepare('SELECT*FROM modalites;');
+		$req->execute();
+		echo '<div class="modal-2">';
+		while($rep=$req->fetch(PDO::FETCH_ASSOC)){
+			echo '<div class="checkbox inline">';
+			if(in_array($rep['id_modalite'],$id_modalite)){
+				echo'<input type="checkbox" name="modalite[]" value="'.$rep['nom_modalite'].'" checked ><label><p>'.$rep['nom_modalite'].'</label>';
+			}
+			else{
+				echo'<input type="checkbox" name="modalite[]" value="'.$rep['nom_modalite'].'"><label><p>'.$rep['nom_modalite'].'</label>';
+			}
+			echo '</div>';
+	}
+	echo '</div>';
+	}catch(PDOException $e){
+		die('Erreur ! '.$e->getMessage().'</body></html>');
+	}
+}
+
+
+function supprimerModalite($bd, $idtraitement)
+{
+	try
+	{
+		$req = $bd->prepare('DELETE from traitements_modalites WHERE id_traitement = :id_traitement');
+		$req->bindValue(':id_traitement',$idtraitement);
+		$req->execute();
+	}
+	
+	catch(PDOException $e)
+	{
+		die('Erreur : ' . $e->getMessage());
+	}
+	
+}
+
 
 
 function creationEtTestFormulaire($bd){
@@ -23,46 +117,94 @@ function creationEtTestFormulaire($bd){
 	{
 	 if(isset($_POST['conf']))
 	 {
-
-		if((trim($_POST['pathologie'])=='' || trim($_POST['pathologie2'])=='' || trim($_POST['pathologie3'])=='' || trim($_POST['pathologie4'])=='' || trim($_POST['pathologie5'])==''))
+				
+		$dossier = 'images_huiles/';
+		$fichier = basename($_FILES['image']['name']);
+		$taille_maxi = 10000000;
+		$taille = filesize($_FILES['image']['tmp_name']);
+		$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+		$extension = strrchr($_FILES['image']['name'], '.');
+		
+		
+		//verifier si les champs pathologies ne sont pas identiques
+		$i=2;
+		$identique = false;
+		while($i<6)
 		{
-			
-			echo "<b>Veuillez choisir 5 pathologies ! !</b>"; 
-		
-		if(trim($_POST['description'])=='')
-			
-			echo  "<b>Le champ description est vide !</b>";
-		
-		if($_POST['modalite']=='0')
-			
-			echo  "<b>Veuiller choisir 3 modalités !</b>";
-		
-		if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
-		{
-		    echo  "<b>Ce format de fichier n'est pas pris en charge</b>";
+			$j=$i+1;
+			while($j<6)
+			{
+				if(($_POST['pathologie'.$i])==($_POST['pathologie'.$j]))
+				{
+					$identique = true;
+					
+				}
+				$j++;
+			}
+			$i++;
 		}
 		
-		if($taille>$taille_maxi)
+		$z=0;
+		while($z<5)
 		{
-			echo  "<b>Fichier trop volumineux</b>";
+			$j=2;
+			while($j<6)
+			{
+				if(($_POST['pathologie'])==($_POST['pathologie'.$j]))
+				{
+					$identique = true;
+					
+				}
+				$j++;
+			}
+			$z++;
 		}
+		
+		
+		if(($identique==true) || (traitementExiste($bd, $_POST['nom'])) || trim($_POST['pathologie'])=='' || trim($_POST['pathologie2'])=='' || trim($_POST['pathologie3'])=='' || trim($_POST['pathologie4'])=='' || trim($_POST['pathologie5'])=='' || !isset($_POST["modalite"]) || ($taille>$taille_maxi) || !($_FILES['image']['name']))
+		{
+		
+			if(trim($_POST['description'])=='')
+				
+				echo  "<b>Le champ description est vide !</b>";
+			
+			if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
+			{
+				echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Ce format de fichier n\'est pas pris en charge<br/></p>';
+			}
+			
+			if(!isset($_POST["modalite"]))
+			{
+				echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Veuillez choisir au moins une modalite<br/></p>';	
+			}
+			
+			if($taille>$taille_maxi)
+			{
+				echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Fichier trop volumineux<br/></p>';
+			}
+			
+			if(!($_FILES['image']['name']))
+			{
+				echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Veuillez choisir une image<br/></p>';
+			}
+			
+			if(traitementExiste($bd, $_POST['nom']))
+			{
+				echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Ce traitement existe déjà<br/></p>';
+			}
+			
+			if($identique==true) //Si l'extension n'est pas dans le tableau
+			{
+				echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Veuillez choisir des pathologies différentes<br/></p>';
+			}			
+		
 		}
 		else
 			{
 			//Si le traitement existe déjà, renvoie message d'erreur
-				if(traitementExiste($bd, $_POST['nom']))
-				{
-					
-				echo '<script type="text/javascript">';
-				
-				echo "alert('Ce traitement existe déjà !');";
-				
-				echo '</script>';
-				}
+
 				
 			//Sinon on crée le traitement
-				else
-				{
 				
 					$dossier = 'images_huiles/';
 					$fichier = basename($_FILES['image']['name']);
@@ -91,49 +233,147 @@ function creationEtTestFormulaire($bd){
 					   
 					   
 					   
-					creerTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['modalite'], $_POST['image']);
+					creerTraitement($bd, $_POST['nom'], $_POST['description'], $_POST['image']);
 					
 					$idtraitement = recupererIdtraitement($bd, $_POST['nom']);
-
-					ajouterPathologie($bd, $_POST['pathologie'], $idtraitement);
-
-					echo '<script type="text/javascript">';
 					
-					echo "alert('Le traitement a bien été ajouté                      Appuyez sur Ok pour continuer');";
+					$idtrait = intval($idtraitement['id_traitement']);
 					
-					echo '</script>';
+					ajouterModaliteTraitement($bd, $_POST, $idtrait);
+
+					ajouterPathologie($bd, $_POST['pathologie'], $idtrait);
+
+
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Le traitement a bien été ajouté<br/></p>';
+					
 					
 
 					if(!empty($_POST['pathologie2'])){
 						
-					ajouterPathologie($bd, $_POST['pathologie2'], $idtraitement);
+					ajouterPathologie($bd, $_POST['pathologie2'], $idtrait);
 					
 					}
 							
 					if(!empty($_POST['pathologie3'])){
 								
-					ajouterPathologie($bd, $_POST['pathologie3'], $idtraitement);
+					ajouterPathologie($bd, $_POST['pathologie3'], $idtrait);
 
 					}
 							
 					if(!empty($_POST['pathologie4'])){
 						
-					ajouterPathologie($bd, $_POST['pathologie4'], $idtraitement);
+					ajouterPathologie($bd, $_POST['pathologie4'], $idtrait);
 					
 					}
 						
 					if(!empty($_POST['pathologie5'])){				
 						
-					ajouterPathologie($bd, $_POST['pathologie5'], $idtraitement);
+					ajouterPathologie($bd, $_POST['pathologie5'], $idtrait);
 
 					}
 				
-				}
+				
 		
 		}
 	}
   }
 }
+
+
+function verificationFormulaireModifier($bd, $tab)
+{
+	
+	if(isset($tab['valider']))//bouton 'Valider' en fait
+		{
+			
+			$dossier = 'images_huiles/';
+			$fichier = basename($_FILES['image']['name']);
+			$taille_maxi = 10000000;
+			$taille = filesize($_FILES['image']['tmp_name']);
+			$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+			$extension = strrchr($_FILES['image']['name'], '.');
+				
+			if(trim($tab['pathologie'])=='' or trim($tab['pathologie2'])=='' or trim($tab['pathologie3'])=='' or trim($tab['pathologie4'])=='' or trim($tab['pathologie5'])=='' or trim($tab['description'])=='' or !isset($tab['modalite']) or !($_FILES['image']['name']))
+			{
+
+				if(trim($tab['nom'])=='')
+				{
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Veuillez ajouter un nom.<br/></p>';
+				}
+								
+				if((trim($tab['pathologie'])=='' || trim($tab['pathologie2'])=='' || trim($tab['pathologie3'])=='' || trim($tab['pathologie4'])=='' || trim($tab['pathologie5'])==''))
+				{
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Veuillez ajouter 5 patholigies.<br/></p>';
+				}
+				
+				if(trim($tab['description'])=='')
+				{
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Veuillez ajouter une desciption.<br/></p>';
+				}
+				
+				if(!isset($tab["modalite"]))
+				{
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Veuillez choisir au moins une modalite<br/></p>';	
+				}
+				
+				if($taille>$taille_maxi)
+				{
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Fichier trop volumineux<br/></p>';
+				}
+				
+
+				if(!($_FILES['image']['name']))
+				{
+					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Veuillez choisir une image<br/></p>';
+				}
+				
+			}
+			
+			else
+			{
+				$pathoAmodif = recupererNomPathologie($bd, $tab['nom']);
+				$idtraitement = $tab['id-cache'];
+
+			
+				$dossier = 'images_huiles/';
+				$fichier = basename($_FILES['image']['name']);
+				$taille_maxi = 10000000;
+				$taille = filesize($_FILES['image']['tmp_name']);
+				$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+				$extension = strrchr($_FILES['image']['name'], '.');
+			
+			
+			
+				//Début des vérifications de sécurité...
+
+			
+				 $fichier = strtr($fichier, 
+					  'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 
+					  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
+				 $fichier = preg_replace('/([^.a-z0-9]+)/i', '-', $fichier);
+				 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
+					 {
+						  $tab['image']=$fichier;
+						  
+					 }
+				 else //Sinon (la fonction renvoie FALSE).
+					 {
+							echo  "<b>Le fichier n'a pas été correctement chargé</b>";
+					 }
+
+				$idtrait = intval($idtraitement);
+				miseAjourTraitement($bd, $tab['nom'], $tab['description'], $idtrait, $tab['image']);
+				miseAjourPathologies($bd, $idtrait, $pathoAmodif, $tab);
+				supprimerModalite($bd, $idtrait);
+				modifierModaliteTraitement($bd, $tab, $idtrait);
+							
+				
+			}
+		}
+
+
+}
+
 
 
 function afficheTraitements($bd)
@@ -306,13 +546,15 @@ function afficheTraitementsSelonSelection($bd, $selection)
     
         echo '<table id="tableauTraitement">' . "\n";
         $res = $req->fetch(PDO::FETCH_ASSOC);
-
+		$image = $res['image'];
         //Il y a au moins une ligne
+		
+		echo '<p> <br/><label>Image actuelle :</label></p><img src="images_huiles/'.$image.'" alt="image" width="400" height="300" id="img_huile" /><br/>';
         if($res)
         {
             //On affiche les en-têtes
             echo '<tr>'."\n";
-                echo '<th>Id du traitement</th><th>Nom du traitement</th><th>Description</th><th>Modalité</th><th>Image</th></bold>';
+                echo '<th>Id du traitement</th><th>Nom du traitement</th><th>Description</th><th>Image</th></bold>';
         
             //On affiche la première ligne    
             echo '<tr>'."\n";
@@ -325,8 +567,12 @@ function afficheTraitementsSelonSelection($bd, $selection)
                 foreach($res as $v)
                     echo '<td>' . $v . '</td>';
             }
+			
+		
         
         }
+		
+
 		
 	}
 		    catch(PDOException $e)
@@ -384,142 +630,111 @@ function afficheTraitementsSelonSelection($bd, $selection)
 }
 
 
-function ajouterPathologie($bd, $pathologie, $idtraitement){
-	
-	//si la pathologie existe on recupere son id
-		if(pathoExiste($bd, $pathologie)){
+function afficheModalitesSelonSelection($bd, $idtraitement)
+{
+    try
+    {
+        
+        $sql2 = 'SELECT nom_modalite FROM modalites natural join  traitements_modalites where id_traitement=:id_traitement';    
+        $req = $bd->prepare($sql2);
+        $req->bindValue(':id_traitement',$idtraitement);
+        $req->execute();
+    
+        echo '<table id="tableauPathologie">' . "\n";
+        $res = $req->fetch(PDO::FETCH_ASSOC);
 
-					
-            $sql2 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
-	    try
+        //Il y a au moins une ligne
+        if($res)
         {
-                $req = $bd->prepare($sql2);
-                $req->bindValue('pathologie',htmlentities($pathologie));
-                $req->execute();
-				
-				$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
-				
+            //On affiche les en-têtes
+            echo '<tr>'."\n";
+                echo '<th>Modalites associées : </th>';
+        
+            //On affiche la première ligne    
+            echo '<tr>'."\n";
+            foreach($res as $v)
+                echo '<td>' . $v . '</td>';
+     
+             while($res = $req->fetch(PDO::FETCH_ASSOC))
+            {
+                echo '<tr>'."\n";
+                foreach($res as $v)
+                    echo '<td>' . $v . '</td>';
+            }
+        
         }
-        catch(PDOException $e)
-        {
-            die('Erreur71 : ' . $e->getMessage()); 
-        }
-		}
-		
-		//sinon on cree la pathologie
-		
-		else{
-		
-		
-		
-		$sql2 = 'INSERT INTO pathologies (nom_pathologie) VALUES (:pathologie)';	
-	    try
-        {
-                $req = $bd->prepare($sql2);
-                $req->bindValue(':pathologie',htmlentities($pathologie));
-                $req->execute();
-        }
-        catch(PDOException $e)
-        {
-            die('Erreur119 : ' . $e->getMessage()); 
-        }
-		
-				//On récupère l id de pathologie
-		
-            $sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
-	    try
-        {
-                $req = $bd->prepare($sql22);
-                $req->bindValue(':pathologie',htmlentities($pathologie));
-                $req->execute();
-				
-				$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
-				
-        }
-        catch(PDOException $e)
-        {
-            die('Erreur136 : ' . $e->getMessage()); 
-        }
-		
-		}
-		
-						//On fait une dernière requete pour lier traitement et pathologie.
-		
-            $sql222 = 'INSERT INTO traitements_pathologies (id_traitement, id_pathologie) VALUES (:idtraitement, :idpathologie)';	
-	    try
-        {
-                $req = $bd->prepare($sql222);
-                $req->bindValue(':idtraitement',htmlentities($idtraitement['id_traitement']));
-                $req->bindValue(':idpathologie',htmlentities($idpathologie['id_pathologie']));
 
-                $req->execute();
-        }
-		        catch(PDOException $e)
-        {
-            die('Erreur AjoutPathologie : ' . $e->getMessage()); 
-        }
-		
+    }
 	
 	
+    catch(PDOException $e)
+    {
+        die('ERREUR : ' . $e->getMessage());
+    }
+    echo '</table>'."\n";
+
 }
 
 
-function ajouterPathologieM($bd, $pathologie, $idtraitement){
+
+
+
+
+function ajouterPathologie($bd, $pathologie, $idtraitement)
+{
+
 	
 	//si la pathologie existe on recupere son id
-		if(pathoExiste($bd, $pathologie)){
-
+		if(pathoExiste($bd, $pathologie))
+		{
+			$sql2 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
+			try
+			{
+					$req = $bd->prepare($sql2);
+					$req->bindValue('pathologie',htmlentities($pathologie));
+					$req->execute();
 					
-            $sql2 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
-	    try
-        {
-                $req = $bd->prepare($sql2);
-                $req->bindValue('pathologie',htmlentities($pathologie));
-                $req->execute();
-				
-				$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
-				
-        }
-        catch(PDOException $e)
-        {
-            die('Erreur71 : ' . $e->getMessage()); 
-        }
+					$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
+					
+			}
+			catch(PDOException $e)
+			{
+				die('Erreur71 : ' . $e->getMessage()); 
+			}
 		}
 		
 		//sinon on cree la pathologie
 		
 		else{
-		
-		
-		
-		$sql2 = 'INSERT INTO pathologies (nom_pathologie) VALUES (:pathologie)';	
-	    try
-        {
-                $req = $bd->prepare($sql2);
-                $req->bindValue(':pathologie',htmlentities($pathologie));
-                $req->execute();
-        }
-        catch(PDOException $e)
-        {
-            die('Erreur119 : ' . $e->getMessage()); 
-        }
-		
-				//On récupère l id de pathologie
-		
-            $sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
-	    try
-        {
-                $req = $bd->prepare($sql22);
-                $req->bindValue(':pathologie',htmlentities($pathologie));
-                $req->execute();
-				
-				$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
-				
-        }
-        catch(PDOException $e)
-        {
-            die('Erreur136 : ' . $e->getMessage()); 
-        }
+	
+			$sql2 = 'INSERT INTO pathologies (nom_pathologie) VALUES (:pathologie)';	
+			try
+			{
+					$req = $bd->prepare($sql2);
+					$req->bindValue(':pathologie',htmlentities($pathologie));
+					$req->execute();
+			}
+			catch(PDOException $e)
+			{
+				die('Erreur119 : ' . $e->getMessage()); 
+			}
+			
+					//On récupère l id de pathologie
+			
+				$sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
+			try
+			{
+					$req = $bd->prepare($sql22);
+					$req->bindValue(':pathologie',htmlentities($pathologie));
+					$req->execute();
+					
+					$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
+					
+			}
+			catch(PDOException $e)
+			{
+				die('Erreur136 : ' . $e->getMessage()); 
+			}
 		
 		}
 		
@@ -544,35 +759,174 @@ function ajouterPathologieM($bd, $pathologie, $idtraitement){
 }
 
 
-function creerTraitement($bd, $nom, $decription, $modalite, $image){
+function ajouterPathologieM($bd, $pathologie, $idtraitement)
+{
+	
+	//si la pathologie existe on recupere son id
+		if(pathoExiste($bd, $pathologie))
+		{
+		
+			$sql2 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
+			try
+			{
+					$req = $bd->prepare($sql2);
+					$req->bindValue('pathologie',htmlentities($pathologie));
+					$req->execute();
+					
+					$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
+					
+			}
+			catch(PDOException $e)
+			{
+				die('Erreur71 : ' . $e->getMessage()); 
+			}
+		}
+		
+		//sinon on cree la pathologie
+		
+		else{
+		
+			$sql2 = 'INSERT INTO pathologies (nom_pathologie) VALUES (:pathologie)';	
+			try
+			{
+					$req = $bd->prepare($sql2);
+					$req->bindValue(':pathologie',htmlentities($pathologie));
+					$req->execute();
+			}
+			catch(PDOException $e)
+			{
+				die('Erreur119 : ' . $e->getMessage()); 
+			}
+			
+					//On récupère l id de pathologie
+			
+				$sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
+			try
+			{
+					$req = $bd->prepare($sql22);
+					$req->bindValue(':pathologie',htmlentities($pathologie));
+					$req->execute();
+					
+					$idpathologie=$req->fetch(PDO::FETCH_ASSOC);
+					
+			}
+			catch(PDOException $e)
+			{
+				die('Erreur136 : ' . $e->getMessage()); 
+			}
+		
+		}
+		
+						//On fait une dernière requete pour lier traitement et pathologie.
+		
+  	   $sql222 = 'INSERT INTO traitements_pathologies (id_traitement, id_pathologie) VALUES (:idtraitement, :idpathologie)';	
+	   
+	    try
+        {
+                $req = $bd->prepare($sql222);
+                $req->bindValue(':idtraitement',htmlentities($idtraitement));
+                $req->bindValue(':idpathologie',htmlentities($idpathologie['id_pathologie']));
+
+                $req->execute();
+        }
+		        catch(PDOException $e)
+        {
+            die('Erreur AjoutPathologie : ' . $e->getMessage()); 
+        }
+		
+	
+	
+}
 
 
- $sql = 'INSERT INTO traitements (nom_traitement, Desc_traitement, id_modalite, image) VALUES (:nom, :description, :modalite, :image)';
+function creerTraitement($bd, $nom, $decription, $image)
+{
+
+
+		$sql = 'INSERT INTO traitements (nom_traitement, Desc_traitement, image) VALUES (:nom, :description, :image)';
 			
 	    try
         {
                 $req = $bd->prepare($sql);
                 $req->bindValue(':nom',htmlentities($nom));
                 $req->bindValue(':description',htmlentities($decription));
-				$req->bindValue(':modalite',htmlentities($modalite));
 				$req->bindValue(':image',htmlentities($image));
                 $req->execute();
-				
-        }
+		}
         catch(PDOException $e)
         {
-            die('Erreur51 : ' . $e->getMessage()); 
+            die('Erreur [Création traitement] : ' . $e->getMessage()); 
         }
-						  
-
+		
 
 }
 
-function recupererIdtraitement($bd, $nom){
+
+function ajouterModaliteTraitement($bd, $tab, $idtraitement)
+{
+	try
+	{
+	
+		foreach($tab['modalite'] as $cle => $valeur)
+		{
+			$req=$bd->prepare('select distinct * from modalites where nom_modalite=:nom_modalite');
+			$req->bindValue(':nom_modalite',$valeur);
+			$req->execute();
+			while($rep=$req->fetch(PDO::FETCH_ASSOC))
+			{
+				$id_modalite=$rep['id_modalite'];
+			}
+			$req=$bd->prepare('INSERT INTO traitements_modalites (id_traitement, id_modalite) VALUES (:id_trait,:id_modal)');
+			$req->bindValue(':id_trait',$idtraitement);
+			$req->bindValue(':id_modal',$id_modalite);	
+			$req->execute();
+		}
+	}	
+		
+	catch(PDOException $e)
+	{
+		die('Erreur [Création modalite] : ' . $e->getMessage()); 
+	}
+	
+}
+
+
+function modifierModaliteTraitement($bd, $tab, $idtraitement)
+{
+	try
+	{
+	
+		foreach($tab['modalite'] as $cle => $valeur)
+		{
+			$req=$bd->prepare('select distinct * from modalites where nom_modalite=:nom_modalite');
+			$req->bindValue(':nom_modalite',$valeur);
+			$req->execute();
+			while($rep=$req->fetch(PDO::FETCH_ASSOC))
+			{
+				$id_modalite=$rep['id_modalite'];
+			}
+			$req=$bd->prepare('INSERT INTO traitements_modalites (id_traitement, id_modalite) VALUES (:id_trait,:id_modal)');
+			$req->bindValue(':id_trait',$idtraitement);
+			$req->bindValue(':id_modal',$id_modalite);	
+			$req->execute();
+		}
+	}	
+		
+	catch(PDOException $e)
+	{
+		die('Erreur [Création modalite] : ' . $e->getMessage()); 
+	}
+	
+}
+
+
+function recupererIdtraitement($bd, $nom)
+{
 	
 	 	//On récupere l id de traitement
 		
-            $sql32 = 'SELECT id_traitement from traitements where nom_traitement=:nom';	
+        $sql32 = 'SELECT id_traitement from traitements where nom_traitement=:nom';	
+		
 	    try
         {
                 $req = $bd->prepare($sql32);
@@ -593,10 +947,11 @@ function recupererIdtraitement($bd, $nom){
 
 function recupererIdpathologie($bd, $pathologie){
 	
-$sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
-	    try
+		$sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie';	
+	   
+		try
         {
-                $req = $bd->prepare($sql22);
+				$req = $bd->prepare($sql22);
                 $req->bindValue(':pathologie',htmlentities($pathologie));
                 $req->execute();
 				
@@ -609,12 +964,13 @@ $sql22 = 'SELECT id_pathologie from pathologies where nom_pathologie=:pathologie
         }
 }
 
-function recupererNomPathologie($bd, $nom){
+function recupererNomPathologie($bd, $nom)
+{
 	
 		$req2=$bd->prepare('SELECT nom_pathologie FROM pathologies natural join traitements natural join  traitements_pathologies where nom_traitement=:choixTrait');
 						
         $req2->bindValue(':choixTrait',$nom);
-	$req2->execute();
+		$req2->execute();
 		
 		while($tab=$req2->fetch(PDO::FETCH_ASSOC)){
 			foreach($tab as $cle => $val)
@@ -626,7 +982,8 @@ function recupererNomPathologie($bd, $nom){
 		
 }
 
-function recupererNombrePathologieParTraitement($bd, $idtraitement){
+function recupererNombrePathologieParTraitement($bd, $idtraitement)
+{
 	
 	$sqlc = 'Select count(*) from traitements_pathologies where id_traitement=:idtraitement';
 	try
@@ -646,7 +1003,7 @@ function recupererNombrePathologieParTraitement($bd, $idtraitement){
 	
 }
 
-
+	/*
 function miseAjourPathologies($bd, $pathologie, $nom, $anciennePatho){
 	
 	//on récupère l'id de pathologie
@@ -673,7 +1030,7 @@ function miseAjourPathologies($bd, $pathologie, $nom, $anciennePatho){
         }	
 			
 		//et donc on recreer le lien
-		/*
+	
             $sql5 = 'INSERT INTO traitements_pathologies (id_traitement, id_pathologie) VALUES (:idtraitement, :idpathologie2)';	
 	    try
         {
@@ -687,13 +1044,44 @@ function miseAjourPathologies($bd, $pathologie, $nom, $anciennePatho){
         {
             die('Erreur MAJ pathologie2 : ' . $e->getMessage()); 
         }	
-	*/
+	
+}
+*/
+
+
+function miseAjourPathologies($bd, $idtraitement, $pathoAmodif, &$patho)
+{
+	
+	
+	supprimerAncienLien($bd, $idtraitement, $pathoAmodif[0]);						
+	ajouterPathologieM($bd, $patho['pathologie'], $idtraitement);	
+
+
+
+	supprimerAncienLien($bd, $idtraitement, $pathoAmodif[1]);
+	ajouterPathologieM($bd, $patho['pathologie2'], $idtraitement);		
+
+
+
+	supprimerAncienLien($bd, $idtraitement, $pathoAmodif[2]);			
+	ajouterPathologieM($bd, $patho['pathologie3'], $idtraitement);
+
+
+	supprimerAncienLien($bd, $idtraitement, $pathoAmodif[3]);
+	ajouterPathologieM($bd, $patho['pathologie4'], $idtraitement);					
+
+
+	supprimerAncienLien($bd, $idtraitement, $pathoAmodif[4]);				
+	ajouterPathologieM($bd, $patho['pathologie5'], $idtraitement);
+	
+	
 }
 
 
-function miseAjourTraitement($bd, $nom, $description, $modalite, $idtraitement, $img){
+function miseAjourTraitement($bd, $nom, $description, $idtraitement, $img)
+{
 
-  $sql = 'UPDATE traitements SET nom_traitement=:nom, Desc_traitement=:description, id_modalite=:modalite, image=:img WHERE id_traitement=:idtraitement';
+  $sql = 'UPDATE traitements SET nom_traitement=:nom, Desc_traitement=:description, image=:img WHERE id_traitement=:idtraitement';
 			
 	  try
           {
@@ -701,17 +1089,14 @@ function miseAjourTraitement($bd, $nom, $description, $modalite, $idtraitement, 
                 $req = $bd->prepare($sql);
                 $req->bindValue(':nom',htmlentities($nom));
                 $req->bindValue(':description',htmlentities($description));
-				$req->bindValue(':modalite',htmlentities($modalite));
 				$req->bindValue(':idtraitement',htmlentities($idtraitement));
 				$req->bindValue(':img',htmlentities($img));
                 $req->execute();
 				
 				
-			echo '<script type="text/javascript">';
 			
-			echo "alert('La traitement a été mise à jour avec succès !');";
+			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Le traitement a été mise à jour avec succès.<br/></p>';
 			
-			echo '</script>';
           }
             catch(PDOException $e)
             {

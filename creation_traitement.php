@@ -36,48 +36,44 @@
 		
 	</head>
 	<body class="homepage">
-		<?php
-			require("menu.php");
-		?>
-		<!-- Le contenu -->
-			<div id="main" class="wrapper style1">
-
-
-	
-<?php
-creationEtTestFormulaire($bd);
-?>
-
-<h2> Création d'un traitement </h2>
-</br>
-<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">
-		<p><label> Nom du traitement : *<span id="Ok" class="vide">Valide</span></label>
-		<input type="text" name="nom" id="nom" autocomplete="off" autofocus required placeholder="Entrez le nom du traitement"/></p>
-		<p><label class="nom_patho"> Pathologies : *<span id="pathoSaisieChamp">Saisir une pathologie valide</span></label><p> 
-		<?php creerChampsPathologies($bd); ?>
-		<p><label> Description du traitement : *</label>
-		</br>
-		<textarea name="description" cols="50" rows="7" required placeholder="Donnez une brève description du traitement..."></textarea></p>
-		<p><label> Modalités : *</label>
-		</br>
-			<select name="modalite" size="3">
-				<option value="1" selected>Voie cutanée</option>
-				<option value="2">Voie orale</option>
-				<option value="3">En diffusion</option>
-			</select>
-		</p>
-		<p> Sélectionnez une image :<input type="file" name="image"/>  </p>	
-		<p> <input type="submit" value="Créer un traitement" name="conf" id="confirmer" /></p></br>
-</form>
-
-</div>
-
-
-		<!-- Le Footer -->
-			<div id="footer">
-				
-			</div>
+			<?php
+				require("menu.php");
+			?>
 			
+		<!-- Le contenu -->
+
+		<div id="main" class="wrapper style1">
+			
+			<?php
+			creationEtTestFormulaire($bd);
+			?>
+
+			<h2> Création d'un traitement </h2>
+			</br>
+			<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">
+					<p><label> Nom du traitement : *<span id="Ok" class="vide">Valide</span></label>
+					<input type="text" name="nom" id="nom" autocomplete="off" autofocus required placeholder="Entrez le nom du traitement" /></p>
+					<p><label class="nom_patho"> Pathologie : *<span id="pathoSaisieChamp">Saisir une pathologie valide</span></label><p> 
+					<?php creerChampsPathologies($bd); ?>
+					<p><label> Description du traitement : *</label>
+					</br>
+					<textarea name="description" cols="50" rows="7" placeholder="Donnez une brève description du traitement..." value="<?php if (isset($_POST['description'])){echo $_POST['description'];} ?>"></textarea></p>
+					<p><label> Modalité : *</label>
+					</br>
+						<?php listboxModalite($bd);?>
+					</p>
+					<p> Sélectionnez une image :<input type="file" name="image"/>  </p>	
+					<p> <input type="submit" value="Créer un traitement" name="conf" id="confirmer" /></p></br>
+			</form>
+
+		</div>
+
+
+<!-- Le Footer -->
+		<div id="footer">
+					
+		</div>
+				
 			
 	</body>
 </html>
