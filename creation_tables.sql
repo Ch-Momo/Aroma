@@ -173,8 +173,6 @@ CREATE TABLE traitements_pathologies(
 CREATE TABLE traitements_modalites(
 	id_traitement MEDIUMINT NOT NULL,
 	id_modalite MEDIUMINT NOT NULL,
-	FOREIGN KEY (id_traitement) REFERENCES traitements(id_traitement),
-	FOREIGN KEY (id_modalite) REFERENCES modalites(id_modalite)
 	);
 /*
 	Données des administrateurs-modérateurs.

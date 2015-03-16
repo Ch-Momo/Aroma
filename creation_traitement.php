@@ -32,7 +32,7 @@
 		<link rel="stylesheet" href="css/style.css" />
 		</noscript>
 		
-		<script src="js/creation_traitement.js"></script>
+		<script src="js/modifier_traitement.js"></script>
 		
 	</head>
 	<body class="homepage">
@@ -48,17 +48,17 @@
 			creationEtTestFormulaire($bd);
 			?>
 
-			<h2> Création d'un traitement </h2>
+			<h2> <img  id="traitement" src="fichiers_traitements/traitement.png" width="100" length="100"/> Création d'un traitement </h2>
 			</br>
 			<form action="<?php echo $_SERVER['PHP_SELF'];?>" method="post" enctype="multipart/form-data">
-					<p><label> Nom du traitement : *<span id="Ok" class="vide">Valide</span></label>
-					<input type="text" name="nom" id="nom" autocomplete="off" autofocus required placeholder="Entrez le nom du traitement" /></p>
-					<p><label class="nom_patho"> Pathologie : *<span id="pathoSaisieChamp">Saisir une pathologie valide</span></label><p> 
+					<p><label> Nom du traitement : </label>
+					<input type="text" name="nom" id="nomTest" autocomplete="off" autofocus required placeholder="Entrez le nom du traitement" /><span id="messageNom" class="invalide">Champ invalide</span></p>
+					<p><label class="nom_patho"> Pathologie :</label><p> 
 					<?php creerChampsPathologies($bd); ?>
-					<p><label> Description du traitement : *</label>
+					<p><label> Description du traitement :</label><span id="messageDes" class="invalide">Champ invalide</span>
 					</br>
-					<textarea name="description" cols="50" rows="7" placeholder="Donnez une brève description du traitement..." value="<?php if (isset($_POST['description'])){echo $_POST['description'];} ?>"></textarea></p>
-					<p><label> Modalité : *</label>
+					<textarea name="description" id="desTest" cols="50" rows="7" placeholder="Donnez une brève description du traitement..." value="<?php if (isset($_POST['description'])){echo $_POST['description'];} ?>"></textarea></p>
+					<p><label> Modalité :</label>
 					</br>
 						<?php listboxModalite($bd);?>
 					</p>
