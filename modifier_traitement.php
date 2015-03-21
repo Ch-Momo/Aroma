@@ -92,13 +92,12 @@
 			$desc=$tab['Desc_traitement'];		
 			$mod=$tab['id_modalite'];
 			$image=$tab["image"];
-
 	?>
 			
 
 
 			<form action="modifier_traitement.php" method="post" enctype="multipart/form-data">
-					<p><label> Nom du traitement : </label> <input type="text" name="nom" id="nomTest" autofocus required value="<?php echo $nom; ?>"/><span id="messageNom" class="invalide">Champ invalide</span></p>
+					<p><label> Nom du traitement : </label> <input type="text" readonly="readonly" name="nom" id="nomTest" autofocus required value="<?php echo $nom; ?>"/><span id="messageNom" class="invalide">Champ invalide</span></p>
 					<input type="hidden" name="id-cache" value="<?php echo $idtraitement['id_traitement']; ?>"/>
 					<p><label> Pathologies : </label><p> 
 					
@@ -113,7 +112,7 @@
 						<?php listboxModaliteRempli($bd, $idtraitement['id_traitement']);?>
 					</p>
 					</br>
-					<input type="hidden" name="image_existante" value="<?php $image?>" /><br/>	
+					<input type="hidden" name="image_existante" value="<?php echo $image;?>" /><br/>	
 					<p> <br/><label>Image actuelle :</label></p><img src="images_traitements/<?php echo $image; ?>" alt="image" width="400" height="300" id="img_huile" />
 					<p> <br/> Sélectionnez une image si vous voulez modifier l'image existante :<br/><br/><input type="file" name="image" value="<?php echo $image; ?>"/>  </p> 
 

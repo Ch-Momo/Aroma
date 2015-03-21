@@ -244,8 +244,7 @@ function creationEtTestFormulaire($bd){
 					ajouterPathologie($bd, $_POST['pathologie'], $idtrait);
 
 
-					echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span>Le traitement a bien été ajouté<br/></p>';
-					
+					echo '<div class="alert alert-success" role="alert"><strong> Le traitement a bien été ajouté </strong></p></div>';
 					
 
 					if(!empty($_POST['pathologie2'])){
@@ -328,36 +327,50 @@ function verificationFormulaireModifier($bd, &$tab)
 			{
 				$pathoAmodif = recupererNomPathologie($bd, $tab['nom']);
 				$idtraitement = $tab['id-cache'];
+				
+				
+				if(isset($tab['image_existante']) and $_FILES['image']['size']==0){
+					// Récuperer le nom de l'image qui existe déjà
+					$req=$bd->prepare('select * from traitements where nom_traitement=:nom_traitement');
+					$req->bindValue(':nom_traitement',$tab['nom']);
+					$req->execute();
+					$rep=$req->fetch(PDO::FETCH_ASSOC);
+					$tab['image_existe']='oui';
+					$tab['image_extension']=$rep['image'];
+				}
+		
+			
+				if(!isset($tab['image_existe']))
+				{
+					$dossier = 'images_traitements/';
+					$fichier = basename($_FILES['image']['name']);
+					$taille_maxi = 10000000;
+					$taille = filesize($_FILES['image']['tmp_name']);
+					$extensions = array('.png', '.gif', '.jpg', '.jpeg');
+					$extension = strrchr($_FILES['image']['name'], '.');
+		
+		
+		
+			//Début des vérifications de sécurité...
 
-			
-				$dossier = 'images_traitements/';
-				$fichier = basename($_FILES['image']['name']);
-				$taille_maxi = 10000000;
-				$taille = filesize($_FILES['image']['tmp_name']);
-				$extensions = array('.png', '.gif', '.jpg', '.jpeg');
-				$extension = strrchr($_FILES['image']['name'], '.');
-			
-			
-			
-				//Début des vérifications de sécurité...
-
-			
-				 $fichier = strtr($fichier, 
-					  'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 
-					  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
-				 $fichier = preg_replace('/([^.a-z0-9]+)/i', '-', $fichier);
-				 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
-					 {
-						  $tab['image']=$fichier;
-						  
-					 }
-				 else //Sinon (la fonction renvoie FALSE).
-					 {
-							echo  "<b>Le fichier n'a pas été correctement chargé</b>";
-					 }
+		
+					 $fichier = strtr($fichier, 
+						  'ÀÁÂÃÄÅÇÈÉÊËÌÍÎÏÒÓÔÕÖÙÚÛÜÝàáâãäåçèéêëìíîïðòóôõöùúûüýÿ', 
+						  'AAAAAACEEEEIIIIOOOOOUUUUYaaaaaaceeeeiiiioooooouuuuyy');
+					 $fichier = preg_replace('/([^.a-z0-9]+)/i', '-', $fichier);
+					 if(move_uploaded_file($_FILES['image']['tmp_name'], $dossier . $fichier)) //Si la fonction renvoie TRUE, c'est que ça a fonctionné...
+						 {
+							  $tab['image_extension']=$fichier;
+							  
+						 }
+					 else //Sinon (la fonction renvoie FALSE).
+						 {
+								echo  "<b>Le fichier n'a pas été correctement chargé</b>";
+						 }
+				}
 
 				$idtrait = intval($idtraitement);
-				miseAjourTraitement($bd, $tab['nom'], $tab['description'], $idtrait, $tab['image']);
+				miseAjourTraitement($bd, $tab['nom'], $tab['description'], $idtrait, $tab['image_extension']);
 				miseAjourPathologies($bd, $idtrait, $pathoAmodif, $tab);
 				supprimerModalite($bd, $idtrait);
 				modifierModaliteTraitement($bd, $tab, $idtrait);
@@ -1089,8 +1102,9 @@ function miseAjourTraitement($bd, $nom, $description, $idtraitement, $img)
                 $req->execute();
 				
 				
+
+			echo '<div class="alert alert-success" role="alert"><strong>Le traitement a été mise à jour avec succès</strong></p></div>';
 			
-			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Le traitement a été mise à jour avec succès.<br/></p>';
 			
           }
             catch(PDOException $e)
@@ -1116,270 +1130,6 @@ function supprimerTraitement($bd, $nom){
             }
 			
 }
-
-
-function ajouterHuiles($bd){
-	require_once 'Classes/PHPExcel/IOFactory.php';
-				 
-	// Chargement du fichier Excel
-	$objPHPExcel = PHPExcel_IOFactory::load("fichiers_huiles/huiles.xls");
-							 
-	/**
-	* récupération de la première feuille du fichier Excel
-	* @var PHPExcel_Worksheet $sheet
-	*/
-	$sheet = $objPHPExcel->getSheet(0);			 
-	$nbLignes=0;
-	$tab=array();
-	$huilesSucces=0;
-	$huilesEchec=0;
-	// On boucle sur les lignes
-	foreach($sheet->getRowIterator() as $row) {
-		if($nbLignes!=0){
-			$nbColonnes=0;
-		   // On boucle sur les cellule de la ligne
-		   foreach ($row->getCellIterator() as $cell) {
-				    if($nbColonnes==0){
-				      $tab['nom']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==1){
-				    	$tab['nom_latin']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==2){
-				    	$tab['famille']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==3){
-				    	$tab['organe']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==4){
-				    	$tab['origine_geo']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==5){
-				    	$tab['constituant1']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==6){
-				    	$tab['pourcentage1']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==7){
-				    	$tab['constituant2']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==8){
-				    	$tab['pourcentage2']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==9){
-				    	$tab['constituant3']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==10){
-				    	$tab['pourcentage3']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==11){
-				    	$tab['constituant4']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==12){
-				    	$tab['pourcentage4']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==13){
-				    	$tab['constituant5']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==14){
-				    	$tab['pourcentage5']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==15){
-				    	$tab['propriete1']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==16){
-				    	$tab['notation1']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==17){
-				    	$tab['propriete2']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==18){
-				    	$tab['notation2']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==19){
-				    	$tab['propriete3']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==20){
-				    	$tab['notation3']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==21){
-				    	$tab['propriete4']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==22){
-				    	$tab['notation4']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==23){
-				    	$tab['propriete5']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==24){
-				    	$tab['notation5']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==25){
-				    	$tab['conseils']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==26){
-				    	$tab['indications']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==27){
-				    	$tab['modeEmploi']=$cell->getValue();
-				    }
-				    
-				    else if ($nbColonnes==29){
-				    	$tab['message_energetique']=$cell->getValue();
-				    }
-				    else if ($nbColonnes==30){
-				    	$tab['image_extension']=$cell->getValue();
-				    }
-			
-				 $nbColonnes++;   
-			    
-			   }
- 
-		// Creation de l'huile
-		$formValide=verification_formulaire_creation_huile_fichier($bd,$tab);
-		if($formValide==true){
-			if(huile_existe($bd,$tab['nom'])){
-				$formValide=false;
-				$huilesEchec++;
-			}
-			else{
-				creation_huile($bd,$tab);
-				$huilesSucces++;
-			}
-		}
-		else{
-			$huilesEchec++;
-		}				 
-		
-
-		}
-		$nbLignes++;
-		}
-		$res=array();
-		$res[0]=$huilesSucces;
-		$res[1]=$huilesEchec;
-		return $res;  
-								
-}
-
-
-function verification_formulaire_creation_huile_fichier($bd,&$tab){
-	$err_nom=false;
-	$err_const=false;
-	$err_pourc=false;
-	$err_prop=false;
-	$err_notation=false;
-	$err_conseils=false;
-	$err_img=false;
-	$formValide=true;
-	/*
-		Vérification des données que l'utilisateur a saisi.
-	*/
-	if(strlen(trim($tab['nom']))<6 or strlen(trim($tab['nom_latin']))<6 or strlen(trim($tab['famille']))<6 or strlen(trim($tab['origine_geo']))<6){
-		$formValide=false;
-		$err_nom=true;
-	}
-
-	/*	
-		Vérifier que les constituants ne sont pas des chaines vides et qu'ils sont distincts
-	*/
-	if(trim($tab['constituant1'])=='' or trim($tab['constituant2'])=='' or trim($tab['constituant3'])=='' or trim($tab['constituant4'])=='' or trim($tab['constituant5'])=='' or !valeurs_distincts($tab['constituant1'],$tab['constituant2'],$tab['constituant3'],$tab['constituant4'],$tab['constituant5'])){
-		$formValide=false;
-		$err_const=true;
-	}
-	/*
-		Vérifier les bonnes valeurs des pourcentages
-	*/
-	if($tab['pourcentage1']>100 or $tab['pourcentage1']<1 or $tab['pourcentage4']>100 or $tab['pourcentage4']<1 or $tab['pourcentage2']>100 or $tab['pourcentage2']<1 or $tab['pourcentage3']>100 or $tab['pourcentage3']<1 or $tab['pourcentage5']>100 or $tab['pourcentage5']<1 or($tab['pourcentage1']+ $tab['pourcentage2']+ $tab['pourcentage3']+ $tab['pourcentage4']+ $tab['pourcentage5']>100)){
-		$formValide=false;
-		$err_pourc=true;
-	}
-
-	/*	
-		Vérifier que les propriétés ne sont pas des chaines vides et qu'ils sont distincts
-	*/
-	if(trim($tab['propriete1'])=='' or trim($tab['propriete2'])=='' or trim($tab['propriete3'])=='' or trim($tab['propriete4'])=='' or trim($tab['propriete5'])=='' or !valeurs_distincts($tab['propriete1'],$tab['propriete2'],$tab['propriete3'],$tab['propriete4'],$tab['propriete5'])){
-		$formValide=false;
-		$err_prop=true;
-	}
-
-	/*
-		Vérifier les notations.
-	*/	
-	if(trim($tab['notation1'])=='' or trim($tab['notation2'])=='' or trim($tab['notation3'])=='' or trim($tab['notation4'])=='' or trim($tab['notation5'])==''){
-		$formValide=false;
-		$err_notation=true;
-	}
-
-	/*
-		Vérifier les conseils et les indications
-	*/
-	if(trim($tab['conseils'])=='' or trim($tab['indications'])==''){
-		$formValide=false;
-		$err_conseils=true;
-	}
-	/*
-		Modes d'emploi.
-	*/
-	$chaine=$tab['modeEmploi'];
-	$modeEmploi=array();
-	$i=0;
-	if(strpos($chaine,'Voie orale')>-1){
-		$modeEmploi[$i]='Voie orale';
-		$i++;
-	}
-
-	if(strpos($chaine,'Voie cutanée')>-1){
-		$modeEmploi[$i]='Voie cutanée';
-		$i++;
-	}
-
-	if(strpos($chaine,'En diffusion')>-1){
-		$modeEmploi[$i]='En diffusion';
-		$i++;
-	}
-	if($i==0){
-		$formValide=False;
-	}
-
-	$tab['modeEmploi']=$modeEmploi;
-	/*
-
-		L'image.
-
-	*/
-	
-	if(trim($tab['image_extension'])=='' or trim($tab['image_extension'])==''){
-		$formValide=false;
-	}
-
-
-	if ($formValide){
-		if(file_exists('fichiers_huiles/'.$tab['image_extension'])){
-			copy('/var/www/html/Aroma/avec-Design/fichiers_huiles/'.$tab['image_extension'],'/var/www/html/Aroma/avec-Design/images_huiles/'.$tab['image_extension']);
-		}
-		else{
-			$formValide=false;
-		}
-
-	}
-	return $formValide;
-
-}
-
-function unzip_file($file, $destination) {
-	// Créer l'objet (PHP 5 >= 5.2)
-	$zip = new ZipArchive() ;
-	// Ouvrir l'archive
-	$zip->open($file);
-	// Extraire le contenu dans le dossier de destination
-	$zip->extractTo($destination);
-	// Fermer l'archive
-	$zip->close();
-	// Afficher un message de fin
-}
-
-
 
 
 ?>

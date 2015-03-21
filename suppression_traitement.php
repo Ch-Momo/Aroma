@@ -112,8 +112,7 @@ $choixTrait = $_POST['choixTrait'];
 			
         {	
 		
-			echo '<p><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Le traitement a bien été supprimé.<br/></p>';
-			
+			echo '<div class="alert alert-success" role="alert"><strong>Le traitement a bien été supprimé </strong></p></div>';
 	
             //On prend d'abord l id de traitement 	
 			$idtraitement = recupererIdtraitement($bd, $choixTrait);
