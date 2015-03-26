@@ -2,7 +2,7 @@
 
 function creerChampsPathologies($bd){
 	
-		echo '<input class="nom_patho" list="pathologie" name="pathologie" id="pathoTest" required autocomplete="off" placeholder="Entrez pathologie 1" value="';
+		echo '<input class="nom_patho" list="pathologie" name="pathologie" id="pathoTest" required type="text" autocomplete="off" placeholder="Entrez pathologie 1" value="';
 		if (isset($_POST['pathologie'])){echo $_POST['pathologie'];}
 			echo '"/><span id="messagePatho" class="invalide">Champ invalide</span><datalist id="pathologie"><option></option>';
 		genereListboxPathologie($bd);
@@ -10,7 +10,7 @@ function creerChampsPathologies($bd){
 		
 	$i=2;
 	while($i<6){
-		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" id="pathoTest'.$i.'" required autocomplete="off" placeholder="Entrez pathologie '.$i.'" value="';
+		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" id="pathoTest'.$i.'" required type="text" autocomplete="off" placeholder="Entrez pathologie '.$i.'" value="';
 		if (isset($_POST['pathologie'.$i])){echo $_POST['pathologie'.$i];}
 		echo '" /><span id="messagePatho'.$i.'" class="invalide">Champ invalide</span><datalist id="pathologie'.$i.'"><option></option>';
 		genereListboxPathologie($bd);
@@ -22,14 +22,14 @@ function creerChampsPathologies($bd){
 
 function modifierChampsPathologies($bd, $pathoAmodif){
 	
-		echo '<input class="nom_patho" list="pathologie" name="pathologie" id="pathoTest" required placeholder="Entrez pathologie 1" value="'.$pathoAmodif[0].'"/><span id="messagePatho" class="invalide">Champ invalide</span><datalist id="pathologie"><option></option>';
+		echo '<input class="nom_patho" list="pathologie" name="pathologie" id="pathoTest" required type="text" placeholder="Entrez pathologie 1" value="'.$pathoAmodif[0].'"/><span id="messagePatho" class="invalide">Champ invalide</span><datalist id="pathologie"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		
 	$i=2;
 	$j=1;
 	while($i<6 && $j<5){
-		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" id="pathoTest'.$i.'" required placeholder="Entrez pathologie '.$i.'" value="'.$pathoAmodif[$j].'"/><span id="messagePatho'.$i.'" class="invalide">Champ invalide</span><datalist id="pathologie'.$i.'"><option></option>';
+		echo '<input class="nom_patho" list="pathologie'.$i.'" name="pathologie'.$i.'" id="pathoTest'.$i.'" required type="text" placeholder="Entrez pathologie '.$i.'" value="'.$pathoAmodif[$j].'"/><span id="messagePatho'.$i.'" class="invalide">Champ invalide</span><datalist id="pathologie'.$i.'"><option></option>';
 		genereListboxPathologie($bd);
 		echo '</datalist></br></br>';
 		$i++;
